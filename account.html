@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Můj účet – FaremSpolu</title>
+    <meta name="description" content="Přehled jízd, hodnocení a aktivit uživatele FaremSpolu." />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body data-page="account">
+    <a class="skip-link" href="#main-content">Přeskočit na obsah</a>
+    <header class="site-header" data-component="header"></header>
+    <main id="main-content" class="page page--account" tabindex="-1">
+      <section class="subhero" data-animate>
+        <div class="container subhero__inner">
+          <div>
+            <h1 class="subhero__title">Můj účet</h1>
+            <p class="subhero__subtitle">
+              Sleduj své cesty jako řidič i pasažér. Spravuj nabídky jízd a sleduj hodnocení.
+            </p>
+          </div>
+          <button class="btn btn--secondary" data-modal-open="offer-modal">Nabídnout jízdu</button>
+        </div>
+      </section>
+
+      <section class="section section--quiet" data-animate>
+        <div class="container account" data-account>
+          <article class="card account__summary" aria-live="polite">
+            <h2 class="section__title">Shrnutí účtu</h2>
+            <p class="account__role" data-account-role>Načítám údaje...</p>
+            <dl class="account__stats">
+              <div>
+                <dt>Jízd jako řidič</dt>
+                <dd data-account-driver-count>–</dd>
+              </div>
+              <div>
+                <dt>Jízd jako pasažér</dt>
+                <dd data-account-passenger-count>–</dd>
+              </div>
+              <div>
+                <dt>Průměrné hodnocení</dt>
+                <dd data-account-rating>–</dd>
+              </div>
+            </dl>
+            <button class="btn btn--ghost" data-modal-open="offer-modal">Přidat novou jízdu</button>
+          </article>
+
+          <section class="account__lists">
+            <article class="card account__section" aria-labelledby="driver-rides-heading">
+              <div class="account__section-header">
+                <h2 id="driver-rides-heading" class="section__title">Moje jízdy jako řidič</h2>
+                <span class="badge" data-driver-role>Řidič</span>
+              </div>
+              <ul class="account__ride-list" data-driver-rides></ul>
+            </article>
+
+            <article class="card account__section" aria-labelledby="passenger-rides-heading">
+              <div class="account__section-header">
+                <h2 id="passenger-rides-heading" class="section__title">Moje jízdy jako pasažér</h2>
+                <span class="badge badge--muted" data-passenger-role>Pasažér</span>
+              </div>
+              <ul class="account__ride-list" data-passenger-rides></ul>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer" data-component="footer"></footer>
+
+    <script type="module" src="assets/js/pages/account.js"></script>
+  </body>
+</html>

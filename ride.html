@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Detail jízdy – FaremSpolu</title>
+    <meta name="description" content="Detail studentské spolujízdy na platformě FaremSpolu." />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body data-page="ride-detail">
+    <a class="skip-link" href="#main-content">Přeskočit na obsah</a>
+    <header class="site-header" data-component="header"></header>
+    <main id="main-content" class="page page--ride-detail" tabindex="-1">
+      <section class="subhero" data-animate>
+        <div class="container subhero__inner" data-ride-header>
+          <div>
+            <p class="eyebrow" data-ride-date>Datum jízdy</p>
+            <h1 class="subhero__title" data-ride-route>Načítám trasu...</h1>
+            <p class="subhero__subtitle" data-ride-summary>Informace o jízdě se načítají.</p>
+          </div>
+          <button
+            class="btn btn--primary"
+            data-request-trigger
+            data-modal-open="request-modal"
+          >
+            Zažádat o místo
+          </button>
+        </div>
+      </section>
+
+      <section class="section" data-animate>
+        <div class="container ride-detail" data-ride-detail>
+          <article class="ride-detail__primary card">
+            <h2 class="section__title">Informace o trase</h2>
+            <dl class="ride-detail__stats">
+              <div>
+                <dt>Odjezd</dt>
+                <dd data-ride-departure>–</dd>
+              </div>
+              <div>
+                <dt>Místo srazu</dt>
+                <dd data-ride-meeting>–</dd>
+              </div>
+              <div>
+                <dt>Doba / vzdálenost</dt>
+                <dd data-ride-distance>–</dd>
+              </div>
+              <div>
+                <dt>Cena</dt>
+                <dd data-ride-price>–</dd>
+              </div>
+            </dl>
+            <p data-ride-description>
+              Popis trasy se načítá. Prosím vyčkej...
+            </p>
+            <div class="ride-detail__tags" data-ride-tags></div>
+          </article>
+
+          <aside class="ride-detail__sidebar">
+            <section class="card ride-driver" aria-labelledby="ride-driver-heading">
+              <h2 id="ride-driver-heading" class="section__title">Řidič</h2>
+              <div class="ride-driver__header">
+                <div class="ride-driver__avatar" data-driver-initials aria-hidden="true"></div>
+                <div>
+                  <p class="ride-driver__name" data-driver-name>—</p>
+                  <p class="ride-driver__rating" data-driver-rating>—</p>
+                </div>
+              </div>
+              <dl class="ride-driver__stats">
+                <div>
+                  <dt>Auto</dt>
+                  <dd data-driver-car>–</dd>
+                </div>
+                <div>
+                  <dt>Barva</dt>
+                  <dd data-driver-color>–</dd>
+                </div>
+                <div>
+                  <dt>SPZ</dt>
+                  <dd data-driver-plate>–</dd>
+                </div>
+                <div>
+                  <dt>Ověřených jízd</dt>
+                  <dd data-driver-trips>–</dd>
+                </div>
+              </dl>
+              <p class="ride-driver__bio" data-driver-bio></p>
+              <button class="btn btn--ghost" data-modal-open="request-modal">Kontaktovat</button>
+            </section>
+
+            <section class="card ride-rating" aria-labelledby="ride-rating-heading">
+              <h2 id="ride-rating-heading" class="section__title">Hodnocení</h2>
+              <div class="ride-rating__score" data-ride-score>—</div>
+              <ul class="ride-rating__reviews" data-ride-reviews></ul>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer" data-component="footer"></footer>
+
+    <script type="module" src="assets/js/pages/rideDetail.js"></script>
+  </body>
+</html>
