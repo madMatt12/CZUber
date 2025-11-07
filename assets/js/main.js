@@ -1,6 +1,8 @@
 import { qs, qsa, toggleHidden, trapFocus, delegate } from './utils/dom.js';
 import { initScrollAnimations } from './utils/animate.js';
 
+document.documentElement.classList.add('has-js');
+
 const state = {
   activeModal: null,
   modalCleanup: null,
