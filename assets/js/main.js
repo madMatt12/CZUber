@@ -6,8 +6,16 @@ document.documentElement.classList.add('has-js');
 const state = {
   activeModal: null,
   modalCleanup: null,
-  toastTimeout: null
+  toastTimeout: null,
+  isAuthenticated: false,
+  authBound: false,
+  profile: {
+    name: 'Matěj Kořínek',
+    initials: 'MK'
+  }
 };
+
+const AUTH_STORAGE_KEY = 'faremspolu-authenticated';
 
 const NAV_LINKS = [
   { href: 'index.html', label: 'Domů', key: 'home' },
@@ -46,6 +54,8 @@ const renderHeader = (activeKey) => {
     return `<li><a class="nav__link" href="${link.href}" data-nav="${link.key}"${current}>${link.label}</a></li>`;
   }).join('');
 
+  const firstName = state.profile.name.split(' ')[0] || state.profile.name;
+
   header.innerHTML = `
     <div class="container site-header__inner">
       <a class="site-header__brand" href="index.html">
@@ -55,9 +65,27 @@ const renderHeader = (activeKey) => {
       <nav class="site-header__nav" aria-label="Hlavní navigace">
         <ul class="nav__list">${linksHtml}</ul>
       </nav>
-      <div class="site-header__cta">
-        <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
-        <button class="btn btn--primary" data-modal-open="offer-modal">Přidat jízdu</button>
+      <div class="site-header__actions">
+        <div class="site-header__auth" data-auth-container>
+          <div class="site-header__auth-guest" data-auth-guest>
+            <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
+            <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
+          </div>
+          <button
+            class="site-header__profile"
+            type="button"
+            data-auth-profile
+            hidden
+            aria-label="Profil uživatele ${state.profile.name}"
+          >
+            <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
+            <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
+          </button>
+        </div>
+        <div class="site-header__cta">
+          <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
+          <button class="btn btn--primary" data-modal-open="offer-modal">Přidat jízdu</button>
+        </div>
       </div>
       <button class="site-header__menu" type="button" aria-expanded="false" aria-controls="nav-menu">
         <span class="sr-only">Otevřít navigaci</span>
@@ -66,6 +94,22 @@ const renderHeader = (activeKey) => {
     </div>
     <nav class="site-header__mobile" id="nav-menu" hidden aria-label="Mobilní navigace">
       <ul class="nav__list">${linksHtml}</ul>
+      <div class="site-header__auth site-header__auth--mobile" data-auth-container>
+        <div class="site-header__auth-guest" data-auth-guest>
+          <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
+          <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
+        </div>
+        <button
+          class="site-header__profile"
+          type="button"
+          data-auth-profile
+          hidden
+          aria-label="Profil uživatele ${state.profile.name}"
+        >
+          <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
+          <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
+        </button>
+      </div>
       <div class="site-header__cta-mobile">
         <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
         <button class="btn btn--primary" data-modal-open="offer-modal">Přidat jízdu</button>
@@ -320,6 +364,80 @@ const setupFooterMeta = () => {
   }
 };
 
+const readAuthState = () => {
+  try {
+    return window.localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+  } catch (error) {
+    console.warn('Nepodařilo se načíst stav přihlášení', error);
+    return false;
+  }
+};
+
+const persistAuthState = (value) => {
+  try {
+    window.localStorage.setItem(AUTH_STORAGE_KEY, value ? 'true' : 'false');
+  } catch (error) {
+    console.warn('Nepodařilo se uložit stav přihlášení', error);
+  }
+};
+
+const updateAuthUI = () => {
+  qsa('[data-auth-container]').forEach((container) => {
+    const guest = qs('[data-auth-guest]', container);
+    const profile = qs('[data-auth-profile]', container);
+    const name = qs('[data-auth-name]', container);
+    const initials = qs('[data-auth-initials]', container);
+
+    if (!profile) return;
+
+    if (state.isAuthenticated) {
+      guest?.setAttribute('hidden', '');
+      profile.removeAttribute('hidden');
+      if (name) {
+        name.textContent = state.profile.name.split(' ')[0] || state.profile.name;
+      }
+      if (initials) {
+        initials.textContent = state.profile.initials;
+      }
+    } else {
+      guest?.removeAttribute('hidden');
+      profile.setAttribute('hidden', '');
+    }
+  });
+};
+
+const loginUser = () => {
+  if (state.isAuthenticated) return;
+  state.isAuthenticated = true;
+  persistAuthState(true);
+  updateAuthUI();
+  showToast('Vítej zpět, Matěji!');
+};
+
+const setupAuthControls = () => {
+  state.isAuthenticated = readAuthState();
+  updateAuthUI();
+
+  if (state.authBound) return;
+
+  delegate('click', '[data-auth-login]', (event) => {
+    event.preventDefault();
+    loginUser();
+  });
+
+  delegate('click', '[data-auth-register]', (event) => {
+    event.preventDefault();
+    showToast('Registrace bude brzy dostupná.');
+  });
+
+  delegate('click', '[data-auth-profile]', (event) => {
+    event.preventDefault();
+    showToast('Správa profilu je ve vývoji.');
+  });
+
+  state.authBound = true;
+};
+
 export const showToast = (message, type = 'info') => {
   const toast = ensureToastRoot();
   toast.textContent = message;
@@ -341,6 +459,7 @@ export const initBase = (activeKey = '') => {
   renderFooter();
   ensureToastRoot();
   setupHeaderMenu();
+  setupAuthControls();
   setupFooterMeta();
   setupModalInteractions();
   highlightNav(activeKey);

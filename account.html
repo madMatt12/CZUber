@@ -72,6 +72,65 @@
           </section>
         </div>
       </section>
+
+      <section class="section" data-animate>
+        <div class="container account-vehicles">
+          <div class="account-vehicles__header">
+            <h2 class="section__title">Moje auta</h2>
+            <p>
+              Spravuj vozidla, která používáš pro spolujízdy. Udržuj informace aktuální pro větší
+              důvěryhodnost a rychlejší potvrzení žádostí.
+            </p>
+          </div>
+          <div class="account-vehicles__content">
+            <article class="card account-vehicles__panel" aria-labelledby="vehicle-list-heading">
+              <div class="account__section-header">
+                <h3 id="vehicle-list-heading" class="section__title">Registrovaná vozidla</h3>
+              </div>
+              <ul class="account-vehicles__items" data-vehicle-list></ul>
+            </article>
+            <article class="card account-vehicles__form" aria-labelledby="vehicle-form-heading">
+              <div class="account__section-header">
+                <h3 id="vehicle-form-heading" class="section__title">Přidat nové vozidlo</h3>
+              </div>
+              <form data-vehicle-form>
+                <div class="account-vehicles__grid account-vehicles__grid--two">
+                  <label class="input" for="vehicle-brand">
+                    <span class="input__label">Značka</span>
+                    <input id="vehicle-brand" name="brand" type="text" required autocomplete="off" />
+                  </label>
+                  <label class="input" for="vehicle-model">
+                    <span class="input__label">Model</span>
+                    <input id="vehicle-model" name="model" type="text" required autocomplete="off" />
+                  </label>
+                </div>
+                <div class="account-vehicles__grid account-vehicles__grid--two">
+                  <label class="input" for="vehicle-color">
+                    <span class="input__label">Barva</span>
+                    <input id="vehicle-color" name="color" type="text" required autocomplete="off" />
+                  </label>
+                  <label class="input" for="vehicle-plate">
+                    <span class="input__label">SPZ</span>
+                    <input id="vehicle-plate" name="plate" type="text" required autocomplete="off" />
+                  </label>
+                </div>
+                <label class="input" for="vehicle-engine">
+                  <span class="input__label">Typ motoru</span>
+                  <select id="vehicle-engine" name="engine" required>
+                    <option value="" disabled selected hidden>Vyber typ motoru</option>
+                    <option value="benzin">Benzín</option>
+                    <option value="diesel">Diesel</option>
+                    <option value="lpg">LPG</option>
+                    <option value="electro">Elektro</option>
+                    <option value="hybrid">Hybrid</option>
+                  </select>
+                </label>
+                <button class="btn btn--primary" type="submit">Uložit vozidlo</button>
+              </form>
+            </article>
+          </div>
+        </div>
+      </section>
     </main>
     <footer class="site-footer" data-component="footer"></footer>
 

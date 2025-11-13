@@ -813,6 +813,114 @@ button {
   margin-top: var(--space-2);
 }
 
+.account-vehicles {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.account-vehicles__header {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 640px;
+}
+
+.account-vehicles__content {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.account-vehicles__panel {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.account-vehicles__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.account-vehicles__item {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(16, 24, 32, 0.08);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  background: rgba(16, 24, 32, 0.03);
+}
+
+.account-vehicles__item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.account-vehicles__item-title {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.account-vehicles__item-title strong {
+  font-size: 1.05rem;
+}
+
+.account-vehicles__item-sub {
+  color: var(--color-gray-500);
+  font-size: 0.9rem;
+}
+
+.account-vehicles__meta {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.account-vehicles__meta div {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.account-vehicles__meta dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-gray-500);
+}
+
+.account-vehicles__meta dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+.account-vehicles__empty {
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: rgba(16, 24, 32, 0.04);
+  color: var(--color-gray-600);
+}
+
+.account-vehicles__form form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.account-vehicles__grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.account-vehicles__grid--two {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.account-vehicles__form .btn {
+  justify-self: start;
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -849,6 +957,89 @@ button {
 
 .site-header__nav {
   display: none;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.site-header__auth {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.site-header__auth-guest {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.site-header__profile {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-gray-900);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.site-header__profile:hover,
+.site-header__profile:focus-visible {
+  background: rgba(39, 152, 77, 0.12);
+  border-color: rgba(39, 152, 77, 0.2);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(39, 152, 77, 0.2);
+}
+
+.site-header__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-green-100);
+  color: var(--color-green-600);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.site-header__profile-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  display: none;
+}
+
+.site-header__auth--mobile {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.site-header__auth--mobile .site-header__auth-guest {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.site-header__auth--mobile .btn {
+  width: 100%;
+}
+
+.site-header__auth--mobile .site-header__profile {
+  justify-content: center;
 }
 
 .nav__list {
@@ -1090,6 +1281,10 @@ button {
   .account__ride-list li {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .account-vehicles__meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 768px) {
@@ -1123,6 +1318,22 @@ button {
 
   .account__lists {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .account-vehicles__content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-header__profile-name {
+    display: inline;
+  }
+
+  .site-header__actions {
+    gap: var(--space-4);
+  }
+
+  .site-header__auth {
+    gap: var(--space-3);
   }
 
   .site-header__nav {

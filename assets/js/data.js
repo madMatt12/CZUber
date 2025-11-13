@@ -126,6 +126,10 @@ const account = {
   passengerRides: [
     { id: 'ride-2', title: 'Kladno → ČZU Koleje', date: '18. 5. 2024 18:10', seats: '1 místo', status: 'Dokončeno' },
     { id: 'ride-3', title: 'Mladá Boleslav → ČZU', date: '12. 5. 2024 7:20', seats: '2 místa', status: 'Potvrzeno' }
+  ],
+  vehicles: [
+    { id: 'vehicle-1', brand: 'Škoda', model: 'Octavia', color: 'Tmavě zelená', plate: '3AB 4567', engine: 'benzin' },
+    { id: 'vehicle-2', brand: 'Hyundai', model: 'Ioniq 5', color: 'Perleťově bílá', plate: '5EK 9087', engine: 'electro' }
   ]
 };
 
