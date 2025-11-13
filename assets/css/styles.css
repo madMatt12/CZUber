@@ -258,6 +258,8 @@ button {
   display: grid;
   gap: var(--space-8);
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .hero__copy {
@@ -301,6 +303,7 @@ button {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 0;
 }
 
 .hero__orb {

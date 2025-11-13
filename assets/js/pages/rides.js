@@ -38,9 +38,11 @@ const renderRideCard = (ride) => {
   const content = template.content.cloneNode(true);
   content.querySelector('[data-route]').textContent = `${ride.from} → ${ride.to}`;
   const formattedDeparture = new Intl.DateTimeFormat('cs-CZ', {
-    weekday: 'short',
+    day: '2-digit',     
+    month: '2-digit',    
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    weekday: 'short'
   }).format(new Date(ride.departure));
   content.querySelector('[data-departure]').textContent = formattedDeparture;
   content.querySelector('[data-driver]').textContent = `Řidič: ${ride.driver.name}`;

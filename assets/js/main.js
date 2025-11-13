@@ -112,11 +112,7 @@ const renderHeader = (activeKey) => {
             <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
             <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
           </button>
-        </div>
-        <div class="site-header__cta">
-          <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
-          <button class="btn btn--primary" data-modal-open="offer-modal">Přidat jízdu</button>
-        </div>
+        </div>       
       </div>
       <button class="site-header__menu" type="button" aria-expanded="false" aria-controls="nav-menu">
         <span class="sr-only">Otevřít navigaci</span>
@@ -817,7 +813,7 @@ const setupAuthControls = () => {
 
   delegate('click', '[data-auth-profile]', (event) => {
     event.preventDefault();
-    showToast('Správa profilu je ve vývoji.');
+    window.location.href = 'account.html';
   });
 
   state.authBound = true;
