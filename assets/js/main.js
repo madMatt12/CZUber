@@ -24,7 +24,6 @@ const AUTH_STORAGE_KEY = 'faremspolu-authenticated';
 const NAV_LINKS = [
   { href: 'index.html', label: 'Domů', key: 'home' },
   { href: 'rides.html', label: 'Hledat jízdu', key: 'rides' },
-  { href: 'account.html', label: 'Můj účet', key: 'account' },
   { href: 'index.html#next-steps', label: 'O projektu', key: 'about' }
 ];
 
@@ -136,10 +135,6 @@ const renderHeader = (activeKey) => {
           <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
           <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
         </button>
-      </div>
-      <div class="site-header__cta-mobile">
-        <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
-        <button class="btn btn--primary" data-modal-open="offer-modal">Přidat jízdu</button>
       </div>
     </nav>
   `;
