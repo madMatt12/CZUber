@@ -1,4 +1,4 @@
-import { initBase, showToast } from '../main.js';
+import { initBase, showToast, syncUserVehicles } from '../main.js';
 import { getAccountOverview } from '../data.js';
 import { qs } from '../utils/dom.js';
 
@@ -125,6 +125,7 @@ const hydrateAccount = (data) => {
   renderRideList('[data-driver-rides]', data.driverRides);
   renderRideList('[data-passenger-rides]', data.passengerRides);
   renderVehicles(data.vehicles || []);
+  syncUserVehicles(data.vehicles || []);
 };
 
 const cleanInput = (value) => value.toString().trim().replace(/\s+/g, ' ');
@@ -177,6 +178,7 @@ const setupVehicleForm = () => {
 
     accountState.vehicles = [...(accountState.vehicles || []), vehicle];
     renderVehicles(accountState.vehicles);
+    syncUserVehicles(accountState.vehicles);
     showToast('Vozidlo bylo přidáno do profilu.');
     form.reset();
     qs('#vehicle-brand', form)?.focus();
