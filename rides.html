@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Přehled jízd – FaremSpolu</title>
+    <meta name="description" content="Procházej studentské jízdy z a na ČZU. Filtruj podle data, směru nebo volných míst." />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body data-page="rides">
+    <a class="skip-link" href="#main-content">Přeskočit na obsah</a>
+    <header class="site-header" data-component="header"></header>
+    <main id="main-content" class="page page--rides" tabindex="-1">
+      <section class="subhero" data-animate>
+        <div class="container subhero__inner">
+          <div class="subhero__copy">
+            <h1 class="subhero__title">Přehled jízd</h1>
+            <p class="subhero__subtitle">
+              Najdi ideální spolujízdu od spolužáků. Filtruj podle směru, data i volných míst.
+            </p>
+          </div>
+          <button class="btn btn--secondary" data-modal-open="offer-modal">Přidat jízdu</button>
+        </div>
+      </section>
+
+      <section class="section section--quiet" data-animate>
+        <div class="container layout">
+          <aside class="filters card" aria-label="Filtry jízd">
+            <form id="rides-filters" class="filters__form" novalidate>
+              <div class="filters__row">
+                <label class="input" for="filter-from">
+                  <span class="input__label">Odkud</span>
+                  <input type="text" id="filter-from" name="from" placeholder="Kolín" />
+                </label>
+                <label class="input" for="filter-to">
+                  <span class="input__label">Kam</span>
+                  <input type="text" id="filter-to" name="to" placeholder="ČZU" />
+                </label>
+              </div>
+              <div class="filters__row">
+                <label class="input" for="filter-date">
+                  <span class="input__label">Datum</span>
+                  <input type="date" id="filter-date" name="date" />
+                </label>
+                <label class="input" for="filter-seats">
+                  <span class="input__label">Počet míst</span>
+                  <input type="number" id="filter-seats" name="seats" min="1" max="5" />
+                </label>
+              </div>
+              <label class="checkbox" for="filter-available">
+                <input type="checkbox" id="filter-available" name="onlyAvailable" value="true" />
+                <span>Jen volná místa</span>
+              </label>
+              <div class="filters__actions">
+                <button class="btn btn--primary" type="submit">Filtrovat</button>
+                <button class="btn btn--ghost" type="reset">Vymazat</button>
+              </div>
+            </form>
+            <p class="filters__note">Filtry se ukládají do URL adresy pro sdílení.</p>
+          </aside>
+
+          <section class="rides-list" aria-live="polite">
+            <header class="rides-list__header">
+              <h2 class="section__title">Dostupné jízdy</h2>
+              <p class="section__subtitle" data-rides-count>
+                Načítám aktuální nabídky...
+              </p>
+            </header>
+            <div class="rides-list__items" data-rides-list></div>
+            <template id="ride-card-template">
+              <article class="rides-card card" data-animate>
+                <div class="rides-card__route">
+                  <span data-route></span>
+                  <span data-departure></span>
+                </div>
+                <div class="rides-card__meta">
+                  <span data-driver></span>
+                  <span data-availability></span>
+                </div>
+                <div class="rides-card__tags" data-tags></div>
+                <div class="rides-card__footer">
+                  <span class="rides-card__price" data-price></span>
+                  <a class="btn btn--ghost" data-link>Detail</a>
+                </div>
+              </article>
+            </template>
+          </section>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer" data-component="footer"></footer>
+
+    <script type="module" src="assets/js/pages/rides.js"></script>
+  </body>
+</html>
