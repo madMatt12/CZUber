@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FaremSpolu – Jezdi spolu na ČZU</title>
+    <meta
+      name="description"
+      content="Moderní studentská spolujízda pro ČZU. Sdílej cestu, ušetři peníze i planetu."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FaremSpolu – Jezdi spolu na ČZU" />
+    <meta
+      property="og:description"
+      content="Rezervuj jízdu se spolužáky z ČZU nebo nabídni volná místa."
+    />
+    <meta property="og:image" content="assets/img/logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body data-page="home">
+    <a class="skip-link" href="#main-content">Přeskočit na obsah</a>
+    <header class="site-header" data-component="header"></header>
+    <main id="main-content" class="page page--home" tabindex="-1">
+      <section class="hero" data-animate>
+        <div class="hero__media" aria-hidden="true">
+          <span class="hero__orb hero__orb--one"></span>
+          <span class="hero__orb hero__orb--two"></span>
+          <span class="hero__icon hero__icon--one"></span>
+          <span class="hero__icon hero__icon--two"></span>
+        </div>
+        <div class="container hero__content">
+          <div class="hero__copy">
+            <p class="eyebrow">Studentská spolujízda z ČZU</p>
+            <h1 class="hero__title">Jezdi spolu na ČZU</h1>
+            <p class="hero__subtitle">
+              Ušetři peníze i planetu. Domluv se se spolužáky, sdílej cestu a získej nové
+              kontakty.
+            </p>
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="rides.html">Najít jízdu</a>
+              <button class="btn btn--secondary" data-modal-open="offer-modal">
+                Přidat jízdu
+              </button>
+            </div>
+            <ul class="hero__stats" aria-label="FaremSpolu statistiky">
+              <li><strong>1200+</strong> zprostředkovaných jízd</li>
+              <li><strong>4.9★</strong> hodnocení komunity</li>
+              <li><strong>-32 % CO₂</strong> proti sólo jízdám</li>
+            </ul>
+          </div>
+          <form class="card search-form" novalidate data-animate>
+            <fieldset class="search-form__group">
+              <legend class="search-form__legend">Najdi svoji další cestu</legend>
+              <label class="input" for="search-from">
+                <span class="input__label">Odkud</span>
+                <input
+                  type="text"
+                  id="search-from"
+                  name="from"
+                  placeholder="Např. Kolín"
+                  required
+                />
+              </label>
+              <label class="input" for="search-to">
+                <span class="input__label">Kam</span>
+                <input
+                  type="text"
+                  id="search-to"
+                  name="to"
+                  placeholder="ČZU Suchdol"
+                  required
+                />
+              </label>
+              <label class="input" for="search-date">
+                <span class="input__label">Datum</span>
+                <input type="date" id="search-date" name="date" required />
+              </label>
+              <label class="input" for="search-time">
+                <span class="input__label">Čas</span>
+                <input type="time" id="search-time" name="time" required />
+              </label>
+              <label class="input" for="search-seats">
+                <span class="input__label">Počet míst</span>
+                <input
+                  type="number"
+                  id="search-seats"
+                  name="seats"
+                  min="1"
+                  max="5"
+                  value="1"
+                  required
+                />
+              </label>
+              <button class="btn btn--primary search-form__submit" type="submit">
+                Najít jízdu
+              </button>
+            </fieldset>
+          </form>
+        </div>
+      </section>
+
+      <section class="section section--light" data-animate>
+        <div class="container features">
+          <header class="section__header">
+            <h2 class="section__title">Proč FaremSpolu</h2>
+            <p class="section__subtitle">Bezpečná, dostupná a ekologická cesta na fakultu.</p>
+          </header>
+          <div class="features__grid">
+            <article class="card feature-card" tabindex="0">
+              <span class="feature-card__icon" aria-hidden="true">
+                <svg width="32" height="32"><use href="assets/img/icons.svg#shield"></use></svg>
+              </span>
+              <h3 class="feature-card__title">Bezpečnější cesta</h3>
+              <p class="feature-card__text">
+                Profil řidičů, ověřená hodnocení a chat se spolužáky ještě před jízdou.
+              </p>
+            </article>
+            <article class="card feature-card" tabindex="0">
+              <span class="feature-card__icon" aria-hidden="true">
+                <svg width="32" height="32"><use href="assets/img/icons.svg#wallet"></use></svg>
+              </span>
+              <h3 class="feature-card__title">Levnější než MHD</h3>
+              <p class="feature-card__text">
+                Sdílej náklady na palivo i parkování. Transparentní ceny a okamžitá platba.
+              </p>
+            </article>
+            <article class="card feature-card" tabindex="0">
+              <span class="feature-card__icon" aria-hidden="true">
+                <svg width="32" height="32"><use href="assets/img/icons.svg#leaf"></use></svg>
+              </span>
+              <h3 class="feature-card__title">Šetrné k planetě</h3>
+              <p class="feature-card__text">
+                Méně aut na silnici, méně emisí. Přispěj k zelenějšímu kampusu ČZU.
+              </p>
+            </article>
+            <article class="card feature-card" tabindex="0">
+              <span class="feature-card__icon" aria-hidden="true">
+                <svg width="32" height="32"><use href="assets/img/icons.svg#hands"></use></svg>
+              </span>
+              <h3 class="feature-card__title">Komunitní zážitek</h3>
+              <p class="feature-card__text">
+                Poznej spolužáky z jiných oborů, sdílej tipy na zkoušky i cestovatelské zážitky.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-animate>
+        <div class="container rides-preview">
+          <header class="section__header">
+            <h2 class="section__title">Nejbližší jízdy</h2>
+            <p class="section__subtitle">Vyber si z aktuálně nabízených jízd od studentů.</p>
+          </header>
+          <div class="rides-preview__list" data-rides-preview></div>
+          <div class="section__actions">
+            <a class="btn btn--ghost" href="rides.html">Zobrazit všechny jízdy</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--accent" data-animate>
+        <div class="container testimonials">
+          <header class="section__header">
+            <h2 class="section__title">Reference od studentů</h2>
+            <p class="section__subtitle">Co říká komunita FaremSpolu.</p>
+          </header>
+          <div class="testimonials__grid">
+            <figure class="testimonial-card card">
+              <blockquote class="testimonial-card__quote">
+                „Našla jsem parťáky na každodenní cestu z Kladna. A díky hodnocení vím, s kým jedu.“
+              </blockquote>
+              <figcaption class="testimonial-card__meta">Lucie, Provozně ekonomická fakulta</figcaption>
+            </figure>
+            <figure class="testimonial-card card">
+              <blockquote class="testimonial-card__quote">
+                „Přidal jsem se jako řidič a mám plné auto během pár minut. Super komunita.“
+              </blockquote>
+              <figcaption class="testimonial-card__meta">Tomáš, Technická fakulta</figcaption>
+            </figure>
+            <figure class="testimonial-card card">
+              <blockquote class="testimonial-card__quote">
+                „Platforma je přístupná, vše jde ovládat klávesnicí a modální okno funguje skvěle.“
+              </blockquote>
+              <figcaption class="testimonial-card__meta">Eva, Fakulta životního prostředí</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--quiet" data-animate id="next-steps">
+        <div class="container split">
+          <div class="split__content">
+            <h2 class="section__title">Sdílej cestu z kampusu i zpět</h2>
+            <p>
+              FaremSpolu propojuje studenty ČZU. Najdeš zde nabídky jízd po celé republice, chytré
+              filtry, ale i komunitu ochotných řidičů a pasažérů. Přidej se a pomoz zmenšit uhlíkovou
+              stopu univerzity.
+            </p>
+          </div>
+          <div class="split__media" aria-hidden="true">
+            <svg class="split__illustration" viewBox="0 0 160 120">
+              <rect x="8" y="20" width="144" height="80" rx="16" class="split__screen" />
+              <path d="M40 80 L55 52 L70 80 Z" class="split__road" />
+              <circle cx="88" cy="60" r="18" class="split__marker" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--quiet" data-animate>
+        <div class="container next-steps">
+          <header class="section__header">
+            <h2 class="section__title">HOW TO RUN</h2>
+            <p class="section__subtitle">Otevři soubor <code>index.html</code> v prohlížeči.</p>
+          </header>
+          <header class="section__header section__header--sub">
+            <h2 class="section__title">NEXT STEPS</h2>
+            <ul class="next-steps__list">
+              <li>Napojení na PHP API pro reálná data jízd.</li>
+              <li>Implementace autentizace studentských účtů ČZU.</li>
+              <li>Server-side filtry a rezervace míst.</li>
+            </ul>
+          </header>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer" data-component="footer"></footer>
+
+    <script type="module" src="assets/js/pages/home.js"></script>
+  </body>
+</html>
