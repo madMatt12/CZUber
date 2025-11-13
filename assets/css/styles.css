@@ -258,6 +258,8 @@ button {
   display: grid;
   gap: var(--space-8);
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .hero__copy {
@@ -301,6 +303,7 @@ button {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 0;
 }
 
 .hero__orb {
@@ -1272,11 +1275,14 @@ button {
 }
 
 .modal__dialog {
-  width: min(100%, 520px);
+  width: min(100%, 640px);
+  max-height: min(90vh, 780px);
   background: var(--color-white);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal__header {
@@ -1303,6 +1309,8 @@ button {
   padding: 0 var(--space-6) var(--space-6);
   display: grid;
   gap: var(--space-4);
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .modal__form {
