@@ -1,7 +1,7 @@
 import { initBase } from '../main.js';
 
 const main = () => {
-  initBase('home', { allowGuests: true });
+  initBase('home', { allowGuests: true, resetAuth: true });
 };
 
 if (document.readyState === 'loading') {

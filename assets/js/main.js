@@ -842,7 +842,9 @@ const loadAccountSnapshot = async () => {
 
 const readLoginState = () => {
   try {
-    return window.sessionStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+    const stored = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
+    if (stored === null) return false;
+    return stored === 'true';
   } catch (error) {
     console.warn('Nepodařilo se načíst stav přihlášení', error);
     return false;
@@ -851,7 +853,11 @@ const readLoginState = () => {
 
 const persistLoginState = (value) => {
   try {
-    window.sessionStorage.setItem(AUTH_STORAGE_KEY, value ? 'true' : 'false');
+    if (value) {
+      window.sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
+    } else {
+      window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    }
   } catch (error) {
     console.warn('Nepodařilo se uložit stav přihlášení', error);
   }
@@ -1001,7 +1007,11 @@ export const showToast = (message, type = 'info') => {
 };
 
 export const initBase = (activeKey = '', options = {}) => {
-  const { allowGuests = false, guestNavLinks = GUEST_NAV_LINKS } = options;
+  const { allowGuests = false, guestNavLinks = GUEST_NAV_LINKS, resetAuth = false } = options;
+
+  if (resetAuth) {
+    persistLoginState(false);
+  }
 
   state.isLoggedIn = readLoginState();
 
