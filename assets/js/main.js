@@ -93,6 +93,35 @@ const renderHeader = (activeKey, { navLinks = NAV_LINKS, showGuestNav = false } 
 
   const homeHref = state.isLoggedIn ? 'index.html' : 'landing.html';
 
+  const guestActions = `
+    <div class="site-header__auth" data-auth-container>
+      <div class="site-header__auth-guest" data-auth-guest>
+        <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
+        <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
+      </div>
+    </div>
+  `;
+
+  const memberActions = `
+    <div class="site-header__quick" data-auth-quick>
+      <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
+      <button class="btn btn--secondary" type="button" data-modal-open="offer-modal">Přidat jízdu</button>
+    </div>
+    <div class="site-header__auth" data-auth-container>
+      <button
+        class="site-header__profile"
+        type="button"
+        data-auth-profile
+        aria-label="Profil uživatele ${state.profile.name}"
+      >
+        <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
+        <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
+      </button>
+    </div>
+  `;
+
+  const actionArea = state.isLoggedIn ? memberActions : guestActions;
+
   header.innerHTML = `
     <div class="container site-header__inner">
       <a class="site-header__brand" href="${homeHref}">
@@ -102,28 +131,7 @@ const renderHeader = (activeKey, { navLinks = NAV_LINKS, showGuestNav = false } 
       <nav class="site-header__nav" aria-label="Hlavní navigace" ${showGuestNav ? '' : ''}>
         <ul class="nav__list">${linksHtml}</ul>
       </nav>
-      <div class="site-header__actions">
-        <div class="site-header__quick" data-auth-quick hidden>
-          <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
-          <button class="btn btn--secondary" type="button" data-modal-open="offer-modal">Přidat jízdu</button>
-        </div>
-        <div class="site-header__auth" data-auth-container>
-          <div class="site-header__auth-guest" data-auth-guest>
-            <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
-            <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
-          </div>
-          <button
-            class="site-header__profile"
-            type="button"
-            data-auth-profile
-            hidden
-            aria-label="Profil uživatele ${state.profile.name}"
-          >
-            <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
-            <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
-          </button>
-        </div>       
-      </div>
+      <div class="site-header__actions">${actionArea}</div>
       <button class="site-header__menu" type="button" aria-expanded="false" aria-controls="nav-menu">
         <span class="sr-only">Otevřít navigaci</span>
         <span class="site-header__menu-line"></span>
@@ -131,26 +139,7 @@ const renderHeader = (activeKey, { navLinks = NAV_LINKS, showGuestNav = false } 
     </div>
     <nav class="site-header__mobile" id="nav-menu" hidden aria-label="Mobilní navigace">
       <ul class="nav__list">${linksHtml}</ul>
-      <div class="site-header__quick site-header__quick--mobile" data-auth-quick hidden>
-        <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
-        <button class="btn btn--secondary" type="button" data-modal-open="offer-modal">Přidat jízdu</button>
-      </div>
-      <div class="site-header__auth site-header__auth--mobile" data-auth-container>
-        <div class="site-header__auth-guest" data-auth-guest>
-          <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
-          <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
-        </div>
-        <button
-          class="site-header__profile"
-          type="button"
-          data-auth-profile
-          hidden
-          aria-label="Profil uživatele ${state.profile.name}"
-        >
-          <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
-          <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
-        </button>
-      </div>
+      <div class="site-header__actions site-header__actions--mobile">${actionArea}</div>
     </nav>
   `;
 };
@@ -870,7 +859,6 @@ const persistLoginState = (value) => {
 
 const updateAuthUI = () => {
   qsa('[data-auth-container]').forEach((container) => {
-    const guest = qs('[data-auth-guest]', container);
     const profile = qs('[data-auth-profile]', container);
     const name = qs('[data-auth-name]', container);
     const initials = qs('[data-auth-initials]', container);
@@ -878,7 +866,6 @@ const updateAuthUI = () => {
     if (!profile) return;
 
     if (state.isLoggedIn) {
-      guest?.setAttribute('hidden', '');
       profile.removeAttribute('hidden');
       if (name) {
         name.textContent = state.profile.name.split(' ')[0] || state.profile.name;
@@ -887,14 +874,10 @@ const updateAuthUI = () => {
         initials.textContent = state.profile.initials;
       }
     } else {
-      guest?.removeAttribute('hidden');
       profile.setAttribute('hidden', '');
     }
   });
 
-  qsa('[data-auth-quick]').forEach((quick) => {
-    toggleHidden(quick, !state.isLoggedIn);
-  });
 };
 
 const loginUser = (overrideName) => {
@@ -1024,7 +1007,7 @@ export const initBase = (activeKey = '', options = {}) => {
 
   const isLandingPage = document.body?.dataset.page === 'landing' || window.location.pathname.endsWith('landing.html');
 
-  if (!allowGuests && !state.isLoggedIn) {
+  if (!state.isLoggedIn && !isLandingPage) {
     window.location.replace('landing.html');
     return;
   }
