@@ -842,7 +842,7 @@ const loadAccountSnapshot = async () => {
 
 const readLoginState = () => {
   try {
-    return window.localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+    return window.sessionStorage.getItem(AUTH_STORAGE_KEY) === 'true';
   } catch (error) {
     console.warn('Nepodařilo se načíst stav přihlášení', error);
     return false;
@@ -851,7 +851,7 @@ const readLoginState = () => {
 
 const persistLoginState = (value) => {
   try {
-    window.localStorage.setItem(AUTH_STORAGE_KEY, value ? 'true' : 'false');
+    window.sessionStorage.setItem(AUTH_STORAGE_KEY, value ? 'true' : 'false');
   } catch (error) {
     console.warn('Nepodařilo se uložit stav přihlášení', error);
   }
