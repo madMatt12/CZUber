@@ -8,7 +8,7 @@ const state = {
   activeModal: null,
   modalCleanup: null,
   toastTimeout: null,
-  isAuthenticated: false,
+  isLoggedIn: false,
   authBound: false,
   profile: {
     name: 'Matěj Kořínek',
@@ -25,6 +25,11 @@ const NAV_LINKS = [
   { href: 'index.html', label: 'Domů', key: 'home' },
   { href: 'rides.html', label: 'Hledat jízdu', key: 'rides' },
   { href: 'index.html#next-steps', label: 'O projektu', key: 'about' }
+];
+
+const GUEST_NAV_LINKS = [
+  { href: 'landing.html', label: 'Domů', key: 'home' },
+  { href: 'landing.html#about', label: 'O projektu', key: 'about' }
 ];
 
 const FOOTER_LINKS = [
@@ -69,50 +74,64 @@ const applyProfileSnapshot = (accountData = {}) => {
   if (!accountData?.name) return;
   state.profile.name = accountData.name;
   state.profile.initials = computeInitials(accountData.name);
-  if (state.isAuthenticated) {
+  if (state.isLoggedIn) {
     updateAuthUI();
   }
 };
 
-const renderHeader = (activeKey) => {
+const renderHeader = (activeKey, { navLinks = NAV_LINKS, showGuestNav = false } = {}) => {
   const header = qs('[data-component="header"]');
   if (!header) return;
   header.setAttribute('role', 'banner');
 
-  const linksHtml = NAV_LINKS.map((link) => {
+  const linksHtml = navLinks.map((link) => {
     const current = link.key === activeKey ? ' aria-current="page"' : '';
     return `<li><a class="nav__link" href="${link.href}" data-nav="${link.key}"${current}>${link.label}</a></li>`;
   }).join('');
 
   const firstName = state.profile.name.split(' ')[0] || state.profile.name;
 
+  const homeHref = state.isLoggedIn ? 'index.html' : 'landing.html';
+
+  const guestActions = `
+    <div class="site-header__auth" data-auth-container>
+      <div class="site-header__auth-guest" data-auth-guest>
+        <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
+        <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
+      </div>
+    </div>
+  `;
+
+  const memberActions = `
+    <div class="site-header__quick" data-auth-quick>
+      <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
+      <button class="btn btn--secondary" type="button" data-modal-open="offer-modal">Přidat jízdu</button>
+    </div>
+    <div class="site-header__auth" data-auth-container>
+      <button
+        class="site-header__profile"
+        type="button"
+        data-auth-profile
+        aria-label="Profil uživatele ${state.profile.name}"
+      >
+        <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
+        <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
+      </button>
+    </div>
+  `;
+
+  const actionArea = state.isLoggedIn ? memberActions : guestActions;
+
   header.innerHTML = `
     <div class="container site-header__inner">
-      <a class="site-header__brand" href="index.html">
+      <a class="site-header__brand" href="${homeHref}">
         <img src="assets/img/logo.svg" alt="FaremSpolu" />
         <span class="site-header__name">FaremSpolu</span>
       </a>
-      <nav class="site-header__nav" aria-label="Hlavní navigace">
+      <nav class="site-header__nav" aria-label="Hlavní navigace" ${showGuestNav ? '' : ''}>
         <ul class="nav__list">${linksHtml}</ul>
       </nav>
-      <div class="site-header__actions">
-        <div class="site-header__auth" data-auth-container>
-          <div class="site-header__auth-guest" data-auth-guest>
-            <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
-            <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
-          </div>
-          <button
-            class="site-header__profile"
-            type="button"
-            data-auth-profile
-            hidden
-            aria-label="Profil uživatele ${state.profile.name}"
-          >
-            <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
-            <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
-          </button>
-        </div>       
-      </div>
+      <div class="site-header__actions">${actionArea}</div>
       <button class="site-header__menu" type="button" aria-expanded="false" aria-controls="nav-menu">
         <span class="sr-only">Otevřít navigaci</span>
         <span class="site-header__menu-line"></span>
@@ -120,22 +139,7 @@ const renderHeader = (activeKey) => {
     </div>
     <nav class="site-header__mobile" id="nav-menu" hidden aria-label="Mobilní navigace">
       <ul class="nav__list">${linksHtml}</ul>
-      <div class="site-header__auth site-header__auth--mobile" data-auth-container>
-        <div class="site-header__auth-guest" data-auth-guest>
-          <button class="btn btn--ghost" type="button" data-auth-login>Přihlásit</button>
-          <button class="btn btn--secondary" type="button" data-auth-register>Registrovat</button>
-        </div>
-        <button
-          class="site-header__profile"
-          type="button"
-          data-auth-profile
-          hidden
-          aria-label="Profil uživatele ${state.profile.name}"
-        >
-          <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
-          <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
-        </button>
-      </div>
+      <div class="site-header__actions site-header__actions--mobile">${actionArea}</div>
     </nav>
   `;
 };
@@ -145,12 +149,13 @@ const renderFooter = () => {
   if (!footer) return;
 
   const linksHtml = FOOTER_LINKS.map((link) => `<li><a href="${link.href}">${link.label}</a></li>`).join('');
+  const homeHref = state.isLoggedIn ? 'index.html' : 'landing.html';
 
   footer.classList.add('footer');
   footer.setAttribute('role', 'contentinfo');
   footer.innerHTML = `
     <div class="container footer__inner">
-      <a class="site-header__brand" href="index.html" aria-label="Zpět na domovskou stránku">
+      <a class="site-header__brand" href="${homeHref}" aria-label="Zpět na domovskou stránku">
         <img src="assets/img/logo.svg" alt="FaremSpolu" />
         <span class="site-header__name">FaremSpolu</span>
       </a>
@@ -290,6 +295,92 @@ const ensureModals = () => {
       </div>
     `;
     document.body.appendChild(requestModal);
+  }
+
+  if (!qs('#login-modal')) {
+    const loginModal = document.createElement('div');
+    loginModal.className = 'modal';
+    loginModal.id = 'login-modal';
+    loginModal.hidden = true;
+    loginModal.innerHTML = `
+      <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+        <div class="modal__header">
+          <h2 class="modal__title" id="login-modal-title">Přihlášení do FaremSpolu</h2>
+          <button class="modal__close" type="button" data-modal-close aria-label="Zavřít dialog">&times;</button>
+        </div>
+        <div class="modal__content">
+          <p>Vítej! Přihlas se svým školním účtem a pokračuj k nabídkám jízd.</p>
+          <form class="modal__form" id="login-form" novalidate>
+            <label class="input" for="login-email">
+              <span class="input__label">Školní e-mail</span>
+              <input id="login-email" name="email" type="email" autocomplete="email" required />
+            </label>
+            <label class="input" for="login-password">
+              <span class="input__label">Heslo</span>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+            </label>
+            <p class="auth-error" role="alert" aria-live="polite" data-auth-error></p>
+            <button class="btn btn--primary" type="submit">Přihlásit</button>
+          </form>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(loginModal);
+  }
+
+  if (!qs('#register-modal')) {
+    const registerModal = document.createElement('div');
+    registerModal.className = 'modal';
+    registerModal.id = 'register-modal';
+    registerModal.hidden = true;
+    registerModal.innerHTML = `
+      <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="register-modal-title">
+        <div class="modal__header">
+          <h2 class="modal__title" id="register-modal-title">Registrace pro studenty ČZU</h2>
+          <button class="modal__close" type="button" data-modal-close aria-label="Zavřít dialog">&times;</button>
+        </div>
+        <div class="modal__content">
+          <p>Registrace je dostupná pouze pro studenty a zaměstnance ČZU. Použij školní e-mail.</p>
+          <form class="modal__form" id="register-form" novalidate>
+            <label class="input" for="register-email">
+              <span class="input__label">Školní e-mail (czu.cz / studenti.czu.cz)</span>
+              <input id="register-email" name="email" type="email" autocomplete="email" required />
+            </label>
+            <label class="input" for="register-password">
+              <span class="input__label">Heslo</span>
+              <input id="register-password" name="password" type="password" autocomplete="new-password" required />
+              <span class="input__hint">Min. 6 znaků, alespoň jedno číslo a velké písmeno.</span>
+            </label>
+            <label class="input" for="register-confirm">
+              <span class="input__label">Heslo znovu</span>
+              <input id="register-confirm" name="confirm" type="password" autocomplete="new-password" required />
+            </label>
+            <div class="split split--compact">
+              <label class="input" for="register-first-name">
+                <span class="input__label">Jméno</span>
+                <input id="register-first-name" name="firstName" type="text" autocomplete="given-name" required />
+              </label>
+              <label class="input" for="register-last-name">
+                <span class="input__label">Příjmení</span>
+                <input id="register-last-name" name="lastName" type="text" autocomplete="family-name" required />
+              </label>
+            </div>
+            <label class="input" for="register-gender">
+              <span class="input__label">Gender</span>
+              <select id="register-gender" name="gender" required>
+                <option value="" disabled selected hidden>Zvol možnost</option>
+                <option value="male">Muž</option>
+                <option value="female">Žena</option>
+                <option value="other">Jiné</option>
+              </select>
+            </label>
+            <p class="auth-error" role="alert" aria-live="polite" data-auth-error></p>
+            <button class="btn btn--primary" type="submit">Registrovat</button>
+          </form>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(registerModal);
   }
 };
 
@@ -445,7 +536,7 @@ const prepareOfferForm = () => {
   resetOfferFormState();
   const nameInput = qs('#offer-name', offerForm);
   if (nameInput) {
-    if (state.isAuthenticated) {
+    if (state.isLoggedIn) {
       nameInput.value = state.profile.name;
       nameInput.readOnly = true;
       nameInput.setAttribute('aria-readonly', 'true');
@@ -575,6 +666,15 @@ const openModal = (id, trigger) => {
     summary.textContent = rideTitle
       ? `Žádost o jízdu: ${rideTitle}`
       : 'Vyber si jízdu, o kterou chceš požádat.';
+  }
+
+  if (modal.id === 'login-modal' || modal.id === 'register-modal') {
+    const form = qs('form', modal);
+    form?.reset();
+    const errorBox = form ? qs('[data-auth-error]', form) : null;
+    if (errorBox) {
+      errorBox.textContent = '';
+    }
   }
 
   requestAnimationFrame(() => firstFocusable?.focus());
@@ -724,7 +824,7 @@ const setupFooterMeta = () => {
 };
 
 const loadAccountSnapshot = async () => {
-  if (state.accountLoaded || state.accountLoading) return;
+  if (state.accountLoaded || state.accountLoading || !state.isLoggedIn) return;
   state.accountLoading = true;
   try {
     const account = await getAccountOverview();
@@ -740,18 +840,24 @@ const loadAccountSnapshot = async () => {
   }
 };
 
-const readAuthState = () => {
+const readLoginState = () => {
   try {
-    return window.localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+    const stored = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
+    if (stored === null) return false;
+    return stored === 'true';
   } catch (error) {
     console.warn('Nepodařilo se načíst stav přihlášení', error);
     return false;
   }
 };
 
-const persistAuthState = (value) => {
+const persistLoginState = (value) => {
   try {
-    window.localStorage.setItem(AUTH_STORAGE_KEY, value ? 'true' : 'false');
+    if (value) {
+      window.sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
+    } else {
+      window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    }
   } catch (error) {
     console.warn('Nepodařilo se uložit stav přihlášení', error);
   }
@@ -759,15 +865,13 @@ const persistAuthState = (value) => {
 
 const updateAuthUI = () => {
   qsa('[data-auth-container]').forEach((container) => {
-    const guest = qs('[data-auth-guest]', container);
     const profile = qs('[data-auth-profile]', container);
     const name = qs('[data-auth-name]', container);
     const initials = qs('[data-auth-initials]', container);
 
     if (!profile) return;
 
-    if (state.isAuthenticated) {
-      guest?.setAttribute('hidden', '');
+    if (state.isLoggedIn) {
       profile.removeAttribute('hidden');
       if (name) {
         name.textContent = state.profile.name.split(' ')[0] || state.profile.name;
@@ -776,40 +880,112 @@ const updateAuthUI = () => {
         initials.textContent = state.profile.initials;
       }
     } else {
-      guest?.removeAttribute('hidden');
       profile.setAttribute('hidden', '');
     }
   });
+
 };
 
-const loginUser = () => {
-  if (state.isAuthenticated) return;
-  state.isAuthenticated = true;
-  persistAuthState(true);
+const loginUser = (overrideName) => {
+  if (state.isLoggedIn) return;
+  if (overrideName) {
+    state.profile.name = overrideName;
+    state.profile.initials = computeInitials(overrideName);
+  }
+  state.isLoggedIn = true;
+  persistLoginState(true);
   updateAuthUI();
-  showToast('Vítej zpět, Matěji!');
+  showToast('Vítej zpět ve FaremSpolu!');
+  window.location.href = 'index.html';
+};
+
+const handleLoginSubmit = (event) => {
+  event.preventDefault();
+  const form = event.target;
+  const email = form.email.value.trim();
+  const password = form.password.value.trim();
+  const errorBox = qs('[data-auth-error]', form);
+  if (!email || !password) {
+    errorBox.textContent = 'Vyplň prosím e-mail i heslo.';
+    return;
+  }
+  errorBox.textContent = '';
+  closeModal();
+  loginUser();
+};
+
+const handleRegisterSubmit = (event) => {
+  event.preventDefault();
+  const form = event.target;
+  const email = form.email.value.trim();
+  const password = form.password.value.trim();
+  const confirm = form.confirm.value.trim();
+  const firstName = form.firstName.value.trim();
+  const lastName = form.lastName.value.trim();
+  const gender = form.gender.value;
+  const errorBox = qs('[data-auth-error]', form);
+
+  const emailPattern = /@(czu\.cz|studenti\.czu\.cz)$/i;
+  const hasMinLength = password.length >= 6;
+  const hasNumber = /\d/.test(password);
+  const hasUpper = /[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/.test(password);
+
+  if (!emailPattern.test(email)) {
+    errorBox.textContent = 'Použij školní e-mail s doménou czu.cz nebo studenti.czu.cz.';
+    return;
+  }
+  if (!hasMinLength || !hasNumber || !hasUpper) {
+    errorBox.textContent = 'Heslo musí mít min. 6 znaků, obsahovat číslo a velké písmeno.';
+    return;
+  }
+  if (password !== confirm) {
+    errorBox.textContent = 'Hesla se neshodují.';
+    return;
+  }
+  if (!firstName || !lastName || !gender) {
+    errorBox.textContent = 'Doplň své jméno, příjmení i gender.';
+    return;
+  }
+
+  errorBox.textContent = '';
+  const fullName = `${firstName} ${lastName}`.trim();
+  closeModal();
+  loginUser(fullName);
 };
 
 const setupAuthControls = () => {
-  state.isAuthenticated = readAuthState();
+  ensureModals();
+  state.isLoggedIn = readLoginState();
   updateAuthUI();
 
   if (state.authBound) return;
 
   delegate('click', '[data-auth-login]', (event) => {
     event.preventDefault();
-    loginUser();
+    openModal('login-modal', event.currentTarget);
   });
 
   delegate('click', '[data-auth-register]', (event) => {
     event.preventDefault();
-    showToast('Registrace bude brzy dostupná.');
+    openModal('register-modal', event.currentTarget);
   });
 
   delegate('click', '[data-auth-profile]', (event) => {
     event.preventDefault();
     window.location.href = 'account.html';
   });
+
+  const loginForm = qs('#login-form');
+  if (loginForm && !loginForm.dataset.bound) {
+    loginForm.dataset.bound = 'true';
+    loginForm.addEventListener('submit', handleLoginSubmit);
+  }
+
+  const registerForm = qs('#register-form');
+  if (registerForm && !registerForm.dataset.bound) {
+    registerForm.dataset.bound = 'true';
+    registerForm.addEventListener('submit', handleRegisterSubmit);
+  }
 
   state.authBound = true;
 };
@@ -830,8 +1006,30 @@ export const showToast = (message, type = 'info') => {
   }, 3500);
 };
 
-export const initBase = (activeKey = '') => {
-  renderHeader(activeKey);
+export const initBase = (activeKey = '', options = {}) => {
+  const { allowGuests = false, guestNavLinks = GUEST_NAV_LINKS, resetAuth = false } = options;
+
+  if (resetAuth) {
+    persistLoginState(false);
+  }
+
+  state.isLoggedIn = readLoginState();
+
+  const isLandingPage = document.body?.dataset.page === 'landing' || window.location.pathname.endsWith('landing.html');
+
+  if (!state.isLoggedIn && !isLandingPage) {
+    window.location.replace('landing.html');
+    return;
+  }
+
+  if (allowGuests && state.isLoggedIn && isLandingPage) {
+    window.location.replace('index.html');
+    return;
+  }
+
+  const navLinks = state.isLoggedIn ? NAV_LINKS : guestNavLinks;
+
+  renderHeader(activeKey, { navLinks, showGuestNav: !state.isLoggedIn && allowGuests });
   renderFooter();
   ensureToastRoot();
   setupHeaderMenu();

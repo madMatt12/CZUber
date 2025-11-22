@@ -157,6 +157,17 @@ button {
   max-width: 52ch;
 }
 
+.feature-list {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: 1.1rem;
+  color: var(--color-gray-700);
+}
+
+.feature-list li {
+  line-height: 1.6;
+}
+
 .section__actions {
   display: flex;
   justify-content: center;
@@ -619,6 +630,11 @@ button {
   gap: var(--space-6);
 }
 
+.split--compact {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
 .split__media {
   display: grid;
   place-items: center;
@@ -1067,6 +1083,18 @@ button {
   flex-wrap: wrap;
 }
 
+.site-header__quick {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.site-header__quick--mobile {
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: var(--space-3);
+}
+
 .site-header__auth {
   display: flex;
   align-items: center;
@@ -1316,6 +1344,12 @@ button {
 .modal__form {
   display: grid;
   gap: var(--space-4);
+}
+
+.auth-error {
+  color: #d5483a;
+  min-height: 1.25rem;
+  margin: 0;
 }
 
 .toast {
