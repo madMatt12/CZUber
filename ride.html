@@ -40,24 +40,40 @@
         <div class="container ride-detail" data-ride-detail>
           <article class="ride-detail__primary card">
             <h2 class="section__title">Informace o trase</h2>
-            <dl class="ride-detail__stats">
-              <div>
-                <dt>Odjezd</dt>
-                <dd data-ride-departure>–</dd>
+            <div class="ride-detail__stats">
+              <div class="ride-detail__stat">
+                <span class="ride-detail__icon" aria-hidden="true">🕒</span>
+                <div class="ride-detail__stat-body">
+                  <p class="ride-detail__label">Odjezd</p>
+                  <p class="ride-detail__value" data-ride-departure>–</p>
+                  <p class="ride-detail__hint">Buď na místě pár minut předem.</p>
+                </div>
               </div>
-              <div>
-                <dt>Místo srazu</dt>
-                <dd data-ride-meeting>–</dd>
+              <div class="ride-detail__stat">
+                <span class="ride-detail__icon" aria-hidden="true">📍</span>
+                <div class="ride-detail__stat-body">
+                  <p class="ride-detail__label">Místo srazu</p>
+                  <p class="ride-detail__value" data-ride-meeting>–</p>
+                  <p class="ride-detail__hint">Potvrď si bod setkání s řidičem.</p>
+                </div>
               </div>
-              <div>
-                <dt>Doba / vzdálenost</dt>
-                <dd data-ride-distance>–</dd>
+              <div class="ride-detail__stat">
+                <span class="ride-detail__icon" aria-hidden="true">🛣</span>
+                <div class="ride-detail__stat-body">
+                  <p class="ride-detail__label">Doba / vzdálenost</p>
+                  <p class="ride-detail__value" data-ride-distance>–</p>
+                  <p class="ride-detail__hint">Čas zahrnuje běžný provoz.</p>
+                </div>
               </div>
-              <div>
-                <dt>Cena</dt>
-                <dd data-ride-price>–</dd>
+              <div class="ride-detail__stat">
+                <span class="ride-detail__icon" aria-hidden="true">💸</span>
+                <div class="ride-detail__stat-body">
+                  <p class="ride-detail__label">Cena</p>
+                  <p class="ride-detail__value" data-ride-price>–</p>
+                  <p class="ride-detail__hint">Platí se za osobu.</p>
+                </div>
               </div>
-            </dl>
+            </div>
             <p data-ride-description>
               Popis trasy se načítá. Prosím vyčkej...
             </p>

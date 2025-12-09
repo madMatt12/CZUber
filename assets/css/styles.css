@@ -755,8 +755,53 @@ button {
 
 .ride-detail__stats {
   display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.ride-detail__stat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(39, 152, 77, 0.08), rgba(39, 152, 77, 0));
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.ride-detail__stat-body {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.ride-detail__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  font-size: 1.2rem;
+}
+
+.ride-detail__label {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-gray-600);
+}
+
+.ride-detail__value {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-gray-900);
+}
+
+.ride-detail__hint {
+  margin: 0;
+  color: var(--color-gray-500);
+  font-size: 0.9rem;
 }
 
 .ride-detail__tags {

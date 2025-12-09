@@ -117,6 +117,7 @@ const rides = [
 
 const account = {
   name: 'Matěj Kořínek',
+  email: 'matej.korinek@studenti.czu.cz',
   role: 'driver',
   rating: 4.9,
   driverRides: [
@@ -141,7 +142,18 @@ const withDelay = (value, delay = 380) =>
 const normalise = (value = '') => value.toString().trim().toLowerCase();
 
 const filterRides = (filters = {}) => {
+  const campusNeedle = 'czu';
+
   return rides.filter((ride) => {
+    if (ride.availableSeats === 0) {
+      return false;
+    }
+    if (filters.direction === 'to' && !normalise(ride.to).includes(campusNeedle)) {
+      return false;
+    }
+    if (filters.direction === 'from' && !normalise(ride.from).includes(campusNeedle)) {
+      return false;
+    }
     if (filters.from && !normalise(ride.from).includes(normalise(filters.from))) {
       return false;
     }
@@ -160,8 +172,11 @@ const filterRides = (filters = {}) => {
         return false;
       }
     }
-    if (filters.onlyAvailable && ride.availableSeats === 0) {
-      return false;
+    if (filters.maxPrice !== undefined && filters.maxPrice !== null && filters.maxPrice !== '') {
+      const maxPrice = Number(filters.maxPrice);
+      if (!Number.isNaN(maxPrice) && ride.price > maxPrice) {
+        return false;
+      }
     }
     return true;
   });

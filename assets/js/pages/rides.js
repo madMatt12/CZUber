@@ -7,29 +7,110 @@ const form = () => qs('#rides-filters');
 const ridesContainer = () => qs('[data-rides-list]');
 const ridesCount = () => qs('[data-rides-count]');
 
+const CAMPUS_LOCATION = 'ČZU';
+const filterState = {
+  direction: 'to',
+  locations: {
+    from: '',
+    to: ''
+  }
+};
+
+const updateDirectionButtons = () => {
+  const filtersForm = form();
+  if (!filtersForm) return;
+  const buttons = filtersForm.querySelectorAll('[data-filter-direction-option]');
+  buttons.forEach((button) => {
+    const targetDirection = button.getAttribute('data-filter-direction-option');
+    const isActive = targetDirection === filterState.direction;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+};
+
+const updateDirectionFields = () => {
+  const filtersForm = form();
+  if (!filtersForm) return;
+
+  const fromInput = filtersForm.elements.namedItem('from');
+  const toInput = filtersForm.elements.namedItem('to');
+  const directionValue = filtersForm.querySelector('[data-filter-direction-value]');
+
+  if (directionValue) {
+    directionValue.value = filterState.direction;
+  }
+
+  if (filterState.direction === 'to') {
+    if (fromInput) {
+      fromInput.readOnly = false;
+      fromInput.removeAttribute('aria-readonly');
+      fromInput.value = filterState.locations.from;
+      fromInput.placeholder = 'Kolín nebo okolí';
+    }
+    if (toInput) {
+      toInput.value = CAMPUS_LOCATION;
+      toInput.readOnly = true;
+      toInput.setAttribute('aria-readonly', 'true');
+      toInput.placeholder = CAMPUS_LOCATION;
+    }
+  } else {
+    if (fromInput) {
+      fromInput.value = CAMPUS_LOCATION;
+      fromInput.readOnly = true;
+      fromInput.setAttribute('aria-readonly', 'true');
+      fromInput.placeholder = CAMPUS_LOCATION;
+    }
+    if (toInput) {
+      toInput.readOnly = false;
+      toInput.removeAttribute('aria-readonly');
+      toInput.value = filterState.locations.to;
+      toInput.placeholder = 'Např. Kolín nebo centrum Prahy';
+    }
+  }
+};
+
+const setFilterDirection = (direction) => {
+  const next = direction === 'from' ? 'from' : 'to';
+  if (next === filterState.direction) return;
+  filterState.direction = next;
+  updateDirectionButtons();
+  updateDirectionFields();
+};
+
 const parseFilters = () => {
   const params = new URLSearchParams(window.location.search);
-  const filters = Object.fromEntries(params.entries());
-  if (params.has('onlyAvailable')) {
-    filters.onlyAvailable = params.get('onlyAvailable') === 'true';
-  }
+  const filters = {};
+
+  filters.direction = params.get('direction') === 'from' ? 'from' : 'to';
+
+  ['from', 'to', 'date', 'seats', 'maxPrice'].forEach((key) => {
+    if (params.has(key)) {
+      filters[key] = params.get(key);
+    }
+  });
+
   return filters;
 };
 
 const syncFormWithFilters = (filters) => {
   const filtersForm = form();
   if (!filtersForm) return;
-  Object.entries(filters).forEach(([key, value]) => {
-    const field = filtersForm.elements.namedItem(key);
-    if (!field) return;
-    if (typeof RadioNodeList !== 'undefined' && field instanceof RadioNodeList) {
-      field.value = value;
-    } else if (field.type === 'checkbox') {
-      field.checked = value === true || value === 'true';
-    } else {
-      field.value = value;
-    }
-  });
+
+  filterState.direction = filters.direction === 'from' ? 'from' : 'to';
+  filterState.locations.from = filterState.direction === 'to' ? filters.from || '' : '';
+  filterState.locations.to = filterState.direction === 'from' ? filters.to || '' : '';
+
+  const dateField = filtersForm.elements.namedItem('date');
+  if (dateField) dateField.value = filters.date || '';
+
+  const seatsField = filtersForm.elements.namedItem('seats');
+  if (seatsField) seatsField.value = filters.seats || '';
+
+  const maxPriceField = filtersForm.elements.namedItem('maxPrice');
+  if (maxPriceField) maxPriceField.value = filters.maxPrice || '';
+
+  updateDirectionButtons();
+  updateDirectionFields();
 };
 
 const renderRideCard = (ride) => {
@@ -92,16 +173,45 @@ const handleFiltersSubmit = (event) => {
   const filtersForm = form();
   if (!filtersForm) return;
 
-  const formData = new FormData(filtersForm);
   const params = new URLSearchParams();
-  formData.forEach((value, key) => {
-    if (value) {
-      params.set(key, value.toString());
+
+  params.set('direction', filterState.direction);
+
+  const fromValue = filterState.direction === 'to' ? filtersForm.from.value.trim() : CAMPUS_LOCATION;
+  const toValue = filterState.direction === 'to' ? CAMPUS_LOCATION : filtersForm.to.value.trim();
+  const dateValue = filtersForm.date.value;
+  const seatsValue = filtersForm.seats.value;
+  const maxPriceValue = filtersForm.maxPrice.value.trim();
+
+  if (filterState.direction === 'to') {
+    if (fromValue) {
+      params.set('from', fromValue);
     }
-  });
-  if (filtersForm.onlyAvailable.checked) {
-    params.set('onlyAvailable', 'true');
+    params.set('to', CAMPUS_LOCATION);
+  } else {
+    params.set('from', CAMPUS_LOCATION);
+    if (toValue) {
+      params.set('to', toValue);
+    }
   }
+
+  if (dateValue) {
+    params.set('date', dateValue);
+  }
+
+  if (seatsValue) {
+    params.set('seats', seatsValue);
+  }
+
+  if (maxPriceValue) {
+    const maxPriceNumber = Number(maxPriceValue);
+    if (Number.isNaN(maxPriceNumber) || maxPriceNumber < 0) {
+      showToast('Cena musí být nula nebo kladné číslo.', 'error');
+      return;
+    }
+    params.set('maxPrice', maxPriceNumber.toString());
+  }
+
   const query = params.toString();
   window.history.replaceState({}, '', `${window.location.pathname}${query ? `?${query}` : ''}`);
   renderRides();
@@ -115,16 +225,54 @@ const handleFiltersSubmit = (event) => {
 const handleFiltersReset = (event) => {
   event.preventDefault();
   const filtersForm = form();
-  filtersForm?.reset();
+  if (filtersForm) {
+    filtersForm.reset();
+  }
+  filterState.direction = 'to';
+  filterState.locations.from = '';
+  filterState.locations.to = '';
+  updateDirectionButtons();
+  updateDirectionFields();
   window.history.replaceState({}, '', window.location.pathname);
   renderRides();
   showToast('Zobrazuji všechny jízdy.');
+};
+
+const setupFilterControls = () => {
+  const filtersForm = form();
+  if (!filtersForm || filtersForm.dataset.enhanced) return;
+
+  const fromInput = filtersForm.elements.namedItem('from');
+  const toInput = filtersForm.elements.namedItem('to');
+
+  const buttons = filtersForm.querySelectorAll('[data-filter-direction-option]');
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const target = button.getAttribute('data-filter-direction-option');
+      setFilterDirection(target);
+    });
+  });
+
+  fromInput?.addEventListener('input', (event) => {
+    if (filterState.direction === 'to') {
+      filterState.locations.from = event.target.value;
+    }
+  });
+
+  toInput?.addEventListener('input', (event) => {
+    if (filterState.direction === 'from') {
+      filterState.locations.to = event.target.value;
+    }
+  });
+
+  filtersForm.dataset.enhanced = 'true';
 };
 
 const main = () => {
   initBase('rides');
   const filters = parseFilters();
   syncFormWithFilters(filters);
+  setupFilterControls();
   const filtersForm = form();
   filtersForm?.addEventListener('submit', handleFiltersSubmit);
   const resetButton = filtersForm?.querySelector('button[type="reset"]');
