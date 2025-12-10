@@ -12,7 +12,8 @@ const state = {
   authBound: false,
   profile: {
     name: 'Matěj Kořínek',
-    initials: 'MK'
+    initials: 'MK',
+    email: 'matej.korinek@studenti.czu.cz'
   },
   userVehicles: [],
   accountLoaded: false,
@@ -74,6 +75,9 @@ const applyProfileSnapshot = (accountData = {}) => {
   if (!accountData?.name) return;
   state.profile.name = accountData.name;
   state.profile.initials = computeInitials(accountData.name);
+  if (accountData.email) {
+    state.profile.email = accountData.email;
+  }
   if (state.isLoggedIn) {
     updateAuthUI();
   }
@@ -660,12 +664,30 @@ const openModal = (id, trigger) => {
     prepareOfferForm();
   }
 
-  if (modal.id === 'request-modal' && trigger) {
+  if (modal.id === 'request-modal') {
     const summary = qs('[data-request-summary]', modal);
-    const rideTitle = trigger.getAttribute('data-ride-title');
+    const rideTitle = trigger?.getAttribute('data-ride-title');
     summary.textContent = rideTitle
       ? `Žádost o jízdu: ${rideTitle}`
       : 'Vyber si jízdu, o kterou chceš požádat.';
+
+    const form = qs('#request-form', modal);
+    const nameInput = qs('#request-name', form);
+    const emailInput = qs('#request-email', form);
+    const applyReadonly = (input, value) => {
+      if (!input) return;
+      input.value = value || '';
+      if (state.isLoggedIn) {
+        input.readOnly = true;
+        input.setAttribute('aria-readonly', 'true');
+      } else {
+        input.readOnly = false;
+        input.removeAttribute('aria-readonly');
+      }
+    };
+
+    applyReadonly(nameInput, state.isLoggedIn ? state.profile.name : '');
+    applyReadonly(emailInput, state.isLoggedIn ? state.profile.email : '');
   }
 
   if (modal.id === 'login-modal' || modal.id === 'register-modal') {
@@ -886,11 +908,14 @@ const updateAuthUI = () => {
 
 };
 
-const loginUser = (overrideName) => {
+const loginUser = (overrideName, email) => {
   if (state.isLoggedIn) return;
   if (overrideName) {
     state.profile.name = overrideName;
     state.profile.initials = computeInitials(overrideName);
+  }
+  if (email) {
+    state.profile.email = email;
   }
   state.isLoggedIn = true;
   persistLoginState(true);
@@ -911,7 +936,7 @@ const handleLoginSubmit = (event) => {
   }
   errorBox.textContent = '';
   closeModal();
-  loginUser();
+  loginUser(undefined, email);
 };
 
 const handleRegisterSubmit = (event) => {
@@ -950,7 +975,7 @@ const handleRegisterSubmit = (event) => {
   errorBox.textContent = '';
   const fullName = `${firstName} ${lastName}`.trim();
   closeModal();
-  loginUser(fullName);
+  loginUser(fullName, email);
 };
 
 const setupAuthControls = () => {

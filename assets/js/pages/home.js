@@ -4,6 +4,14 @@ import { initScrollAnimations } from '../utils/animate.js';
 import { qs } from '../utils/dom.js';
 
 const STORAGE_KEY = 'faremspolu:lastSearch';
+const CAMPUS_LOCATION = 'ČZU';
+const searchState = {
+  direction: 'to',
+  locations: {
+    from: '',
+    to: ''
+  }
+};
 
 const formatDepartureLabel = (isoString) => {
   const date = new Date(isoString);
@@ -61,21 +69,96 @@ const renderFeaturedRides = async () => {
   }
 };
 
+const updateDirectionButtons = () => {
+  const form = qs('.search-form');
+  if (!form) return;
+  const buttons = form.querySelectorAll('[data-search-direction-option]');
+  buttons.forEach((button) => {
+    const targetDirection = button.getAttribute('data-search-direction-option');
+    const isActive = targetDirection === searchState.direction;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+};
+
+const updateDirectionFields = () => {
+  const form = qs('.search-form');
+  if (!form) return;
+
+  const fromInput = form.elements.namedItem('from');
+  const toInput = form.elements.namedItem('to');
+  const directionValue = form.querySelector('[data-search-direction-value]');
+
+  if (directionValue) {
+    directionValue.value = searchState.direction;
+  }
+
+  if (searchState.direction === 'to') {
+    if (fromInput) {
+      fromInput.readOnly = false;
+      fromInput.removeAttribute('aria-readonly');
+      fromInput.value = searchState.locations.from;
+      fromInput.placeholder = 'Např. Kolín';
+    }
+    if (toInput) {
+      toInput.value = CAMPUS_LOCATION;
+      toInput.readOnly = true;
+      toInput.setAttribute('aria-readonly', 'true');
+      toInput.placeholder = CAMPUS_LOCATION;
+    }
+  } else {
+    if (fromInput) {
+      fromInput.value = CAMPUS_LOCATION;
+      fromInput.readOnly = true;
+      fromInput.setAttribute('aria-readonly', 'true');
+      fromInput.placeholder = CAMPUS_LOCATION;
+    }
+    if (toInput) {
+      toInput.readOnly = false;
+      toInput.removeAttribute('aria-readonly');
+      toInput.value = searchState.locations.to;
+      toInput.placeholder = 'Např. Kolín nebo centrum Prahy';
+    }
+  }
+};
+
+const setSearchDirection = (direction) => {
+  const next = direction === 'from' ? 'from' : 'to';
+  if (next === searchState.direction) return;
+  searchState.direction = next;
+  updateDirectionButtons();
+  updateDirectionFields();
+};
+
 const restoreSearch = () => {
   const form = qs('.search-form');
   if (!form) return;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
+    if (!raw) {
+      updateDirectionButtons();
+      updateDirectionFields();
+      return;
+    }
     const values = JSON.parse(raw);
-    Object.entries(values).forEach(([key, value]) => {
+
+    searchState.direction = values.direction === 'from' ? 'from' : 'to';
+    searchState.locations.from = searchState.direction === 'to' ? values.from || '' : '';
+    searchState.locations.to = searchState.direction === 'from' ? values.to || '' : '';
+
+    ['date', 'time', 'seats'].forEach((key) => {
       const field = form.elements.namedItem(key);
-      if (field) {
-        field.value = value;
+      if (field && values[key]) {
+        field.value = values[key];
       }
     });
+
+    updateDirectionButtons();
+    updateDirectionFields();
   } catch (error) {
     console.warn('Nepodařilo se obnovit uložené hledání', error);
+    updateDirectionButtons();
+    updateDirectionFields();
   }
 };
 
@@ -87,8 +170,22 @@ const handleSearchSubmit = (event) => {
     return;
   }
 
-  const formData = new FormData(form);
-  const payload = Object.fromEntries(formData.entries());
+  const direction = searchState.direction;
+  const fromValue = direction === 'to' ? form.from.value.trim() : CAMPUS_LOCATION;
+  const toValue = direction === 'to' ? CAMPUS_LOCATION : form.to.value.trim();
+
+  const payload = {
+    direction,
+    from: fromValue,
+    to: toValue
+  };
+
+  ['date', 'time', 'seats'].forEach((key) => {
+    const value = form.elements.namedItem(key)?.value;
+    if (value) {
+      payload[key] = value;
+    }
+  });
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     showToast('Poslední hledání uloženo.');
@@ -102,7 +199,33 @@ const handleSearchSubmit = (event) => {
 
 const initSearchForm = () => {
   const form = qs('.search-form');
-  form?.addEventListener('submit', handleSearchSubmit);
+  if (!form || form.dataset.enhanced) return;
+
+  const buttons = form.querySelectorAll('[data-search-direction-option]');
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const target = button.getAttribute('data-search-direction-option');
+      setSearchDirection(target);
+    });
+  });
+
+  const fromInput = form.elements.namedItem('from');
+  const toInput = form.elements.namedItem('to');
+
+  fromInput?.addEventListener('input', (event) => {
+    if (searchState.direction === 'to') {
+      searchState.locations.from = event.target.value;
+    }
+  });
+
+  toInput?.addEventListener('input', (event) => {
+    if (searchState.direction === 'from') {
+      searchState.locations.to = event.target.value;
+    }
+  });
+
+  form.addEventListener('submit', handleSearchSubmit);
+  form.dataset.enhanced = 'true';
 };
 
 const main = () => {

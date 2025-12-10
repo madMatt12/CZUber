@@ -83,10 +83,23 @@
                 <span class="input__label">Datum</span>
                 <input type="date" id="search-date" name="date" required />
               </label>
-              <label class="input" for="search-time">
-                <span class="input__label">Čas</span>
-                <input type="time" id="search-time" name="time" required />
-              </label>
+              <div class="input input--switch">
+                <span class="input__label">Směr jízdy</span>
+                <div class="switch" data-search-direction-switch role="group" aria-label="Směr jízdy">
+                  <button
+                    class="switch__option is-active"
+                    type="button"
+                    data-search-direction-option="to"
+                    aria-pressed="true"
+                  >
+                    Na ČZU
+                  </button>
+                  <button class="switch__option" type="button" data-search-direction-option="from" aria-pressed="false">
+                    Z ČZU
+                  </button>
+                </div>
+                <input type="hidden" name="direction" value="to" data-search-direction-value />
+              </div>
               <label class="input" for="search-seats">
                 <span class="input__label">Počet míst</span>
                 <input
@@ -226,7 +239,7 @@
             <h2 class="section__title">NEXT STEPS</h2>
             <ul class="next-steps__list">
               <li>Napojení na PHP API pro reálná data jízd.</li>
-              <li>Implementace autentizace studentských účtů ČZU.</li>
+              <li>Implementace chatu uživatelů.</li>
               <li>Server-side filtry a rezervace míst.</li>
             </ul>
           </header>

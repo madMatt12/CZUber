@@ -35,10 +35,27 @@
         <div class="container layout">
           <aside class="filters card" aria-label="Filtry jízd">
             <form id="rides-filters" class="filters__form" novalidate>
+              <div class="input input--switch">
+                <span class="input__label">Směr jízdy</span>
+                <div class="switch" data-filter-direction-switch role="group" aria-label="Směr jízdy">
+                  <button
+                    class="switch__option is-active"
+                    type="button"
+                    data-filter-direction-option="to"
+                    aria-pressed="true"
+                  >
+                    Na ČZU
+                  </button>
+                  <button class="switch__option" type="button" data-filter-direction-option="from" aria-pressed="false">
+                    Z ČZU
+                  </button>
+                </div>
+                <input type="hidden" name="direction" value="to" data-filter-direction-value />
+              </div>
               <div class="filters__row">
                 <label class="input" for="filter-from">
                   <span class="input__label">Odkud</span>
-                  <input type="text" id="filter-from" name="from" placeholder="Kolín" />
+                  <input type="text" id="filter-from" name="from" placeholder="Karlovy Vary" />
                 </label>
                 <label class="input" for="filter-to">
                   <span class="input__label">Kam</span>
@@ -55,10 +72,12 @@
                   <input type="number" id="filter-seats" name="seats" min="1" max="5" />
                 </label>
               </div>
-              <label class="checkbox" for="filter-available">
-                <input type="checkbox" id="filter-available" name="onlyAvailable" value="true" />
-                <span>Jen volná místa</span>
-              </label>
+              <div class="filters__row">
+                <label class="input" for="filter-max-price">
+                  <span class="input__label">Maximální cena</span>
+                  <input type="number" id="filter-max-price" name="maxPrice" min="0" placeholder="Do kolika Kč?" />
+                </label>
+              </div>
               <div class="filters__actions">
                 <button class="btn btn--primary" type="submit">Filtrovat</button>
                 <button class="btn btn--ghost" type="reset">Vymazat</button>
