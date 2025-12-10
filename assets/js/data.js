@@ -3,7 +3,7 @@ const rides = [
     id: 'ride-1',
     from: 'Kolín',
     to: 'ČZU Suchdol',
-    departure: '2024-05-22T15:40:00',
+    departure: '2025-12-22T15:40:00',
     meetingPoint: 'Kolín hl.n., parkoviště P2',
     duration: '55 min',
     distance: '68 km',
@@ -24,15 +24,15 @@ const rides = [
       initials: 'PN'
     },
     reviews: [
-      { author: 'Tereza', rating: 5, text: 'Spolehlivá řidička, příjemná jízda.', date: 'duben 2024' },
-      { author: 'Michal', rating: 5, text: 'Auto čisté, Petra je moc fajn.', date: 'březen 2024' }
+      { author: 'Tereza', rating: 5, text: 'Spolehlivá řidička, příjemná jízda.', date: 'duben 2025' },
+      { author: 'Michal', rating: 5, text: 'Auto čisté, Petra je moc fajn.', date: 'březen 2025' }
     ]
   },
   {
     id: 'ride-2',
     from: 'Kladno',
     to: 'ČZU Koleje',
-    departure: '2024-05-22T18:10:00',
+    departure: '2025-12-22T18:10:00',
     meetingPoint: 'Kladno centrum, zastávka OAZA',
     duration: '45 min',
     distance: '42 km',
@@ -53,14 +53,14 @@ const rides = [
       initials: 'JD'
     },
     reviews: [
-      { author: 'Klára', rating: 5, text: 'Honza dorazil přesně, doporučuji.', date: 'květen 2024' }
+      { author: 'Klára', rating: 5, text: 'Honza dorazil přesně, doporučuji.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-3',
     from: 'Mladá Boleslav',
     to: 'ČZU Suchdol',
-    departure: '2024-05-23T07:20:00',
+    departure: '2025-12-23T07:20:00',
     meetingPoint: 'Mladá Boleslav, OC Olympia',
     duration: '1 h 5 min',
     distance: '74 km',
@@ -81,15 +81,15 @@ const rides = [
       initials: 'LH'
     },
     reviews: [
-      { author: 'Martin', rating: 5, text: 'Lucie vždycky nabídne kávu a energii.', date: 'únor 2024' },
-      { author: 'Hana', rating: 4.5, text: 'Bezpečná jízda, doporučuji.', date: 'leden 2024' }
+      { author: 'Martin', rating: 5, text: 'Lucie vždycky nabídne kávu a energii.', date: 'únor 2025' },
+      { author: 'Hana', rating: 4.5, text: 'Bezpečná jízda, doporučuji.', date: 'leden 2025' }
     ]
   },
   {
     id: 'ride-4',
     from: 'Plzeň',
     to: 'ČZU Suchdol',
-    departure: '2024-05-24T14:00:00',
+    departure: '2025-12-24T14:00:00',
     meetingPoint: 'Plzeň, OC Borská pole (parkoviště C)',
     duration: '1 h 45 min',
     distance: '93 km',
@@ -110,14 +110,14 @@ const rides = [
       initials: 'AH'
     },
     reviews: [
-      { author: 'Daniel', rating: 4.5, text: 'Pohodlná jízda, hodně místa.', date: 'březen 2024' }
+      { author: 'Daniel', rating: 4.5, text: 'Pohodlná jízda, hodně místa.', date: 'březen 2025' }
     ]
   },
   {
     id: 'ride-5',
     from: 'Beroun',
     to: 'ČZU Suchdol',
-    departure: '2024-05-24T07:00:00',
+    departure: '2025-12-24T07:00:00',
     meetingPoint: 'Beroun, autobusové nádraží',
     duration: '50 min',
     distance: '48 km',
@@ -138,14 +138,14 @@ const rides = [
       initials: 'EM'
     },
     reviews: [
-      { author: 'Sabina', rating: 5, text: 'Skvělá hudba a pohodová jízda.', date: 'duben 2024' }
+      { author: 'Sabina', rating: 5, text: 'Skvělá hudba a pohodová jízda.', date: 'duben 2025' }
     ]
   },
   {
     id: 'ride-6',
     from: 'Kolín',
     to: 'ČZU Suchdol',
-    departure: '2024-05-24T12:30:00',
+    departure: '2025-12-24T12:30:00',
     meetingPoint: 'Kolín, Benešova 104',
     duration: '55 min',
     distance: '68 km',
@@ -166,14 +166,14 @@ const rides = [
       initials: 'MD'
     },
     reviews: [
-      { author: 'Ondřej', rating: 4.5, text: 'Jízda v pohodě, přijel včas.', date: 'květen 2024' }
+      { author: 'Ondřej', rating: 4.5, text: 'Jízda v pohodě, přijel včas.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-7',
     from: 'ČZU Suchdol',
     to: 'Nymburk',
-    departure: '2024-05-24T17:10:00',
+    departure: '2025-12-24T17:10:00',
     meetingPoint: 'ČZU, před Menzou',
     duration: '1 h',
     distance: '60 km',
@@ -194,14 +194,14 @@ const rides = [
       initials: 'TK'
     },
     reviews: [
-      { author: 'Ivana', rating: 5, text: 'Příjemný řidič, dobré tempo.', date: 'duben 2024' }
+      { author: 'Ivana', rating: 5, text: 'Příjemný řidič, dobré tempo.', date: 'duben 2025' }
     ]
   },
   {
     id: 'ride-8',
     from: 'ČZU Koleje',
     to: 'Pardubice',
-    departure: '2024-05-25T08:15:00',
+    departure: '2025-12-25T08:15:00',
     meetingPoint: 'ČZU Koleje, vrátnice A',
     duration: '1 h 40 min',
     distance: '120 km',
@@ -222,14 +222,14 @@ const rides = [
       initials: 'RČ'
     },
     reviews: [
-      { author: 'Barbora', rating: 4.5, text: 'Pohodlné auto, přijel přesně.', date: 'únor 2024' }
+      { author: 'Barbora', rating: 4.5, text: 'Pohodlné auto, přijel přesně.', date: 'únor 2025' }
     ]
   },
   {
     id: 'ride-9',
     from: 'ČZU Suchdol',
     to: 'Liberec',
-    departure: '2024-05-25T15:00:00',
+    departure: '2025-12-25T15:00:00',
     meetingPoint: 'ČZU, parkoviště u rektorátu',
     duration: '1 h 30 min',
     distance: '109 km',
@@ -250,14 +250,14 @@ const rides = [
       initials: 'AP'
     },
     reviews: [
-      { author: 'Jitka', rating: 5, text: 'Milá společnost a čisté auto.', date: 'březen 2024' }
+      { author: 'Jitka', rating: 5, text: 'Milá společnost a čisté auto.', date: 'březen 2025' }
     ]
   },
   {
     id: 'ride-10',
     from: 'ČZU Suchdol',
     to: 'Kladno',
-    departure: '2024-05-23T19:30:00',
+    departure: '2025-12-23T19:30:00',
     meetingPoint: 'ČZU, hlavní brána',
     duration: '35 min',
     distance: '32 km',
@@ -278,14 +278,14 @@ const rides = [
       initials: 'BD'
     },
     reviews: [
-      { author: 'Simona', rating: 4.5, text: 'Krátká cesta, dobrý řidič.', date: 'květen 2024' }
+      { author: 'Simona', rating: 4.5, text: 'Krátká cesta, dobrý řidič.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-11',
     from: 'Hradec Králové',
     to: 'ČZU Suchdol',
-    departure: '2024-05-26T17:45:00',
+    departure: '2025-12-26T17:45:00',
     meetingPoint: 'HK, u Aldisu',
     duration: '1 h 20 min',
     distance: '112 km',
@@ -306,14 +306,14 @@ const rides = [
       initials: 'VK'
     },
     reviews: [
-      { author: 'Ema', rating: 5, text: 'Čisté auto a pohodová jízda.', date: 'duben 2024' }
+      { author: 'Ema', rating: 5, text: 'Čisté auto a pohodová jízda.', date: 'duben 2025' }
     ]
   },
   {
     id: 'ride-12',
     from: 'České Budějovice',
     to: 'ČZU Suchdol',
-    departure: '2024-05-23T13:10:00',
+    departure: '2025-12-23T13:10:00',
     meetingPoint: 'ČB, Mercury centrum',
     duration: '1 h 50 min',
     distance: '150 km',
@@ -334,14 +334,14 @@ const rides = [
       initials: 'PN'
     },
     reviews: [
-      { author: 'Radka', rating: 5, text: 'Luxusní jízda a rychlé dobití.', date: 'květen 2024' }
+      { author: 'Radka', rating: 5, text: 'Luxusní jízda a rychlé dobití.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-13',
     from: 'ČZU Suchdol',
     to: 'Příbram',
-    departure: '2024-05-26T12:00:00',
+    departure: '2025-12-26T12:00:00',
     meetingPoint: 'ČZU, parkoviště FŽP',
     duration: '1 h',
     distance: '70 km',
@@ -362,14 +362,14 @@ const rides = [
       initials: 'SV'
     },
     reviews: [
-      { author: 'Dominik', rating: 4.5, text: 'Dobrá cena a spolehlivý čas.', date: 'březen 2024' }
+      { author: 'Dominik', rating: 4.5, text: 'Dobrá cena a spolehlivý čas.', date: 'březen 2025' }
     ]
   },
   {
     id: 'ride-14',
     from: 'Mělník',
     to: 'ČZU Suchdol',
-    departure: '2024-05-22T06:50:00',
+    departure: '2025-12-22T06:50:00',
     meetingPoint: 'Mělník, u Labe',
     duration: '45 min',
     distance: '38 km',
@@ -390,14 +390,14 @@ const rides = [
       initials: 'KS'
     },
     reviews: [
-      { author: 'Alžběta', rating: 5, text: 'Karolína jezdí přesně podle času.', date: 'květen 2024' }
+      { author: 'Alžběta', rating: 5, text: 'Karolína jezdí přesně podle času.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-15',
     from: 'ČZU Koleje',
     to: 'Kralupy nad Vltavou',
-    departure: '2024-05-22T18:40:00',
+    departure: '2025-12-22T18:40:00',
     meetingPoint: 'ČZU Koleje, budova B',
     duration: '35 min',
     distance: '30 km',
@@ -418,14 +418,14 @@ const rides = [
       initials: 'MŘ'
     },
     reviews: [
-      { author: 'Tonda', rating: 4.5, text: 'Jízda s hudbou, bylo to fajn.', date: 'duben 2024' }
+      { author: 'Tonda', rating: 4.5, text: 'Jízda s hudbou, bylo to fajn.', date: 'duben 2025' }
     ]
   },
   {
     id: 'ride-16',
     from: 'Příbram',
     to: 'ČZU Suchdol',
-    departure: '2024-05-27T07:20:00',
+    departure: '2025-12-27T07:20:00',
     meetingPoint: 'Příbram, autobusové nádraží',
     duration: '1 h 5 min',
     distance: '71 km',
@@ -446,14 +446,14 @@ const rides = [
       initials: 'DH'
     },
     reviews: [
-      { author: 'Adéla', rating: 5, text: 'Příjemná řidička a čisté auto.', date: 'květen 2024' }
+      { author: 'Adéla', rating: 5, text: 'Příjemná řidička a čisté auto.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-17',
     from: 'ČZU Suchdol',
     to: 'Brno',
-    departure: '2024-05-27T14:30:00',
+    departure: '2025-12-27T14:30:00',
     meetingPoint: 'ČZU, parkoviště P2',
     duration: '2 h 30 min',
     distance: '210 km',
@@ -474,14 +474,14 @@ const rides = [
       initials: 'JM'
     },
     reviews: [
-      { author: 'Filip', rating: 5, text: 'Super komfort a rychlá cesta.', date: 'duben 2024' }
+      { author: 'Filip', rating: 5, text: 'Super komfort a rychlá cesta.', date: 'duben 2025' }
     ]
   },
   {
     id: 'ride-18',
     from: 'Louny',
     to: 'ČZU Suchdol',
-    departure: '2024-05-23T08:00:00',
+    departure: '2025-12-23T08:00:00',
     meetingPoint: 'Louny, náměstí',
     duration: '1 h 10 min',
     distance: '74 km',
@@ -502,14 +502,14 @@ const rides = [
       initials: 'KL'
     },
     reviews: [
-      { author: 'Magda', rating: 4.5, text: 'Vždy dorazí včas.', date: 'květen 2024' }
+      { author: 'Magda', rating: 4.5, text: 'Vždy dorazí včas.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-19',
     from: 'ČZU Suchdol',
     to: 'Rakovník',
-    departure: '2024-05-28T16:00:00',
+    departure: '2025-12-28T16:00:00',
     meetingPoint: 'ČZU, hlavní brána',
     duration: '1 h 5 min',
     distance: '70 km',
@@ -530,14 +530,14 @@ const rides = [
       initials: 'RP'
     },
     reviews: [
-      { author: 'Kamil', rating: 4.5, text: 'Ochotná a spolehlivá.', date: 'březen 2024' }
+      { author: 'Kamil', rating: 4.5, text: 'Ochotná a spolehlivá.', date: 'březen 2025' }
     ]
   },
   {
     id: 'ride-20',
     from: 'ČZU Suchdol',
     to: 'Plzeň',
-    departure: '2024-05-24T18:20:00',
+    departure: '2025-12-24T18:20:00',
     meetingPoint: 'ČZU, parkoviště u kolejí',
     duration: '1 h 40 min',
     distance: '93 km',
@@ -558,14 +558,14 @@ const rides = [
       initials: 'KH'
     },
     reviews: [
-      { author: 'Lucie', rating: 4.5, text: 'Spolehlivá jízda, pohodlné.', date: 'duben 2024' }
+      { author: 'Lucie', rating: 4.5, text: 'Spolehlivá jízda, pohodlné.', date: 'duben 2025' }
     ]
   },
   {
     id: 'ride-21',
     from: 'Tábor',
     to: 'ČZU Suchdol',
-    departure: '2024-05-28T06:30:00',
+    departure: '2025-12-28T06:30:00',
     meetingPoint: 'Tábor, autobusové nádraží',
     duration: '1 h 40 min',
     distance: '110 km',
@@ -586,14 +586,14 @@ const rides = [
       initials: 'NH'
     },
     reviews: [
-      { author: 'Petr', rating: 5, text: 'Natálie jezdí bezpečně.', date: 'duben 2024' }
+      { author: 'Petr', rating: 5, text: 'Natálie jezdí bezpečně.', date: 'duben 2025' }
     ]
   },
   {
     id: 'ride-22',
     from: 'ČZU Suchdol',
     to: 'Havířov',
-    departure: '2024-05-29T14:00:00',
+    departure: '2025-12-29T14:00:00',
     meetingPoint: 'ČZU, parkoviště P1',
     duration: '3 h 40 min',
     distance: '350 km',
@@ -614,14 +614,14 @@ const rides = [
       initials: 'LŘ'
     },
     reviews: [
-      { author: 'Šimon', rating: 5, text: 'Skvělá jízda na dlouhou vzdálenost.', date: 'březen 2024' }
+      { author: 'Šimon', rating: 5, text: 'Skvělá jízda na dlouhou vzdálenost.', date: 'březen 2025' }
     ]
   },
   {
     id: 'ride-23',
     from: 'ČZU Koleje',
     to: 'Praha centrum',
-    departure: '2024-05-22T09:15:00',
+    departure: '2025-12-22T09:15:00',
     meetingPoint: 'ČZU Koleje, před Kolejní',
     duration: '25 min',
     distance: '12 km',
@@ -642,14 +642,14 @@ const rides = [
       initials: 'AB'
     },
     reviews: [
-      { author: 'Tereza', rating: 4.5, text: 'Rychlé domluvení, čisté auto.', date: 'květen 2024' }
+      { author: 'Tereza', rating: 4.5, text: 'Rychlé domluvení, čisté auto.', date: 'květen 2025' }
     ]
   },
   {
     id: 'ride-24',
     from: 'ČZU Suchdol',
     to: 'Kolín',
-    departure: '2024-05-29T18:00:00',
+    departure: '2025-12-29T18:00:00',
     meetingPoint: 'ČZU, parkoviště za Aulou',
     duration: '55 min',
     distance: '68 km',
@@ -670,7 +670,7 @@ const rides = [
       initials: 'KV'
     },
     reviews: [
-      { author: 'Jiří', rating: 5, text: 'Přátelská řidička, příjemná cesta.', date: 'duben 2024' }
+      { author: 'Jiří', rating: 5, text: 'Přátelská řidička, příjemná cesta.', date: 'duben 2025' }
     ]
   }
 ];
@@ -681,12 +681,12 @@ const account = {
   role: 'driver',
   rating: 4.9,
   driverRides: [
-    { id: 'ride-1', title: 'Kolín → ČZU Suchdol', date: '22. 5. 2024 15:40', seats: '2/4 obsazeno', status: 'Plánováno' },
-    { id: 'ride-4', title: 'Plzeň → ČZU Suchdol', date: '24. 5. 2024 14:00', seats: 'Plně obsazeno', status: 'Potvrzeno' }
+    { id: 'ride-1', title: 'Kolín → ČZU Suchdol', date: '22. 5. 2025 15:40', seats: '2/4 obsazeno', status: 'Plánováno' },
+    { id: 'ride-4', title: 'Plzeň → ČZU Suchdol', date: '24. 5. 2025 14:00', seats: 'Plně obsazeno', status: 'Potvrzeno' }
   ],
   passengerRides: [
-    { id: 'ride-2', title: 'Kladno → ČZU Koleje', date: '18. 5. 2024 18:10', seats: '1 místo', status: 'Dokončeno' },
-    { id: 'ride-3', title: 'Mladá Boleslav → ČZU', date: '12. 5. 2024 7:20', seats: '2 místa', status: 'Potvrzeno' }
+    { id: 'ride-2', title: 'Kladno → ČZU Koleje', date: '18. 5. 2025 18:10', seats: '1 místo', status: 'Dokončeno' },
+    { id: 'ride-3', title: 'Mladá Boleslav → ČZU', date: '12. 5. 2025 7:20', seats: '2 místa', status: 'Potvrzeno' }
   ],
   vehicles: [
     { id: 'vehicle-1', brand: 'Škoda', model: 'Octavia', color: 'Tmavě zelená', plate: '3AB 4567', engine: 'benzin' },

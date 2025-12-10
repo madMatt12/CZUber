@@ -45,7 +45,7 @@ const updateDirectionFields = () => {
       fromInput.readOnly = false;
       fromInput.removeAttribute('aria-readonly');
       fromInput.value = filterState.locations.from;
-      fromInput.placeholder = 'Kolín nebo okolí';
+      fromInput.placeholder = 'Odkud jedeš?';
     }
     if (toInput) {
       toInput.value = CAMPUS_LOCATION;
@@ -64,7 +64,7 @@ const updateDirectionFields = () => {
       toInput.readOnly = false;
       toInput.removeAttribute('aria-readonly');
       toInput.value = filterState.locations.to;
-      toInput.placeholder = 'Např. Kolín nebo centrum Prahy';
+      toInput.placeholder = 'Kam máš namířeno?';
     }
   }
 };
