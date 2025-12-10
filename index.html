@@ -59,6 +59,23 @@
           <form class="card search-form" novalidate data-animate>
             <fieldset class="search-form__group">
               <legend class="search-form__legend">Najdi svoji další cestu</legend>
+              <div class="input input--switch">
+                <span class="input__label">Směr jízdy</span>
+                <div class="switch" data-search-direction-switch role="group" aria-label="Směr jízdy">
+                  <button
+                    class="switch__option is-active"
+                    type="button"
+                    data-search-direction-option="to"
+                    aria-pressed="true"
+                  >
+                    Na ČZU
+                  </button>
+                  <button class="switch__option" type="button" data-search-direction-option="from" aria-pressed="false">
+                    Z ČZU
+                  </button>
+                </div>
+                <input type="hidden" name="direction" value="to" data-search-direction-value />
+              </div>
               <label class="input" for="search-from">
                 <span class="input__label">Odkud</span>
                 <input
