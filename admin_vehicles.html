@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Správa vozidel – Admin FaremSpolu</title>
+    <meta name="description" content="Přehled vozidel uživatelů FaremSpolu." />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar" aria-label="Administrátorská navigace">
+        <a href="index.html" class="admin-sidebar__brand">
+          <img src="assets/img/logo.svg" alt="FaremSpolu" />
+          FaremSpolu Admin
+        </a>
+        <nav class="admin-nav">
+          <a href="admin_index.html" class="admin-nav__link">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            Přehled
+          </a>
+          <a href="admin_users.html" class="admin-nav__link">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            Uživatelé
+          </a>
+          <a href="admin_rides.html" class="admin-nav__link">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            Správa jízd
+          </a>
+          <a href="admin_vehicles.html" class="admin-nav__link" aria-current="page">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            Vozidla
+          </a>
+        </nav>
+        <div style="padding: 1rem; margin-top: auto;">
+          <button class="btn btn--secondary" style="width: 100%;" onclick="window.location.href='index.html'">Zpět na web</button>
+        </div>
+      </aside>
+
+      <main class="admin-content">
+        <header class="admin-header">
+          <h1 class="admin-title">Vozidla uživatelů</h1>
+          <div class="site-header__auth">
+            <button class="site-header__profile" type="button" aria-label="Profil administrátora">
+              <span class="site-header__avatar" aria-hidden="true">AD</span>
+              <span class="site-header__profile-name" aria-hidden="true">Admin</span>
+            </button>
+            <button class="btn btn--ghost" type="button" onclick="sessionStorage.clear(); localStorage.removeItem('auth_token'); window.location.href='landing.html';" style="margin-left: 0.5rem; padding: 0.5rem;" title="Odhlásit" aria-label="Odhlásit">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
+          </div>
+        </header>
+
+        <form class="admin-filters" id="vehicle-filter-form">
+          <div class="input" style="flex: 1; min-width: 200px;">
+            <label for="filter-vehicle-owner" class="sr-only">E-mail majitele</label>
+            <input type="text" id="filter-vehicle-owner" placeholder="Hledat podle e-mailu majitele..." />
+          </div>
+          <div class="input" style="flex: 1; min-width: 150px;">
+            <label for="filter-vehicle-plate" class="sr-only">SPZ</label>
+            <input type="text" id="filter-vehicle-plate" placeholder="Hledat SPZ (např. 1AA 1234)..." />
+          </div>
+          <button type="submit" class="btn btn--secondary" style="flex: 0 0 auto;">Filtrovat</button>
+        </form>
+
+        <section class="card">
+          <p class="section__subtitle" style="margin-bottom: var(--space-4);">Tady vidíš vozidla, která řidiči přidávají do systému. Můžeš zakročit v případě nesmyslných profilů vozů.</p>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Majitel (E-mail)</th>
+                  <th>Značka a Model</th>
+                  <th>SPZ</th>
+                  <th>Motor</th>
+                  <th>Akce</th>
+                </tr>
+              </thead>
+              <tbody id="vehicles-tbody">
+                <tr><td colspan="5" style="text-align:center; color: #999;">Načítám…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const API_BASE = 'api/index.php?action=';
+      const token = localStorage.getItem('auth_token') || '';
+      const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+      let allVehicles = [];
+
+      function renderVehicles(vehicles) {
+        const tbody = document.getElementById('vehicles-tbody');
+        if (!vehicles.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #999;">Žádná vozidla.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = vehicles.map(v => `
+          <tr>
+            <td>${v.owner_email}</td>
+            <td>${v.brand} ${v.model} (${v.color || '–'})</td>
+            <td>${v.plate || '–'}</td>
+            <td>${v.engine_type || '–'}</td>
+            <td><button class="btn btn--ghost" style="padding: 0.25rem 0.75rem; color: #d12e2e;" onclick="deleteVehicle(${v.id})">Odstranit</button></td>
+          </tr>
+        `).join('');
+      }
+
+      async function loadVehicles() {
+        try {
+          const res = await fetch(API_BASE + 'admin/vehicles', { headers });
+          const json = await res.json();
+          allVehicles = Array.isArray(json) ? json : [];
+          renderVehicles(allVehicles);
+        } catch(e) { console.error(e); }
+      }
+
+      async function deleteVehicle(vehicleId) {
+        if (!confirm('Opravdu chceš toto vozidlo odstranit?')) return;
+        try {
+          await fetch(API_BASE + 'admin/vehicles', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ vehicleId })
+          });
+          loadVehicles();
+        } catch(e) { alert('Chyba: ' + e.message); }
+      }
+
+      document.getElementById('vehicle-filter-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const owner = document.getElementById('filter-vehicle-owner').value.toLowerCase();
+        const plate = document.getElementById('filter-vehicle-plate').value.toLowerCase();
+        
+        let filtered = allVehicles;
+        if (owner) filtered = filtered.filter(v => v.owner_email.toLowerCase().includes(owner));
+        if (plate) filtered = filtered.filter(v => (v.plate || '').toLowerCase().includes(plate));
+        renderVehicles(filtered);
+      });
+
+      loadVehicles();
+    </script>
+  </body>
+</html>

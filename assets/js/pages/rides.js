@@ -1,5 +1,5 @@
-import { initBase, showToast } from '../main.js';
-import { getRides } from '../data.js';
+import { initBase } from '../main.js';
+import { showToast, api } from '../utils/api.js';
 import { initScrollAnimations } from '../utils/animate.js';
 import { qs } from '../utils/dom.js';
 
@@ -145,7 +145,7 @@ const renderRides = async () => {
   container.innerHTML = '<p>Načítám jízdy...</p>';
   const filters = parseFilters();
   try {
-    const data = await getRides(filters);
+    const data = await api.rides.getAll(filters);
     if (countEl) {
       countEl.textContent = `${data.length} jízd nalezeno`;
     }
@@ -285,3 +285,4 @@ if (document.readyState === 'loading') {
 } else {
   main();
 }
+

@@ -1,6 +1,6 @@
 import { qs, qsa, toggleHidden, trapFocus, delegate } from './utils/dom.js';
 import { initScrollAnimations } from './utils/animate.js';
-import { getAccountOverview } from './data.js';
+import { api, showToast, clearValidation, showValidationError } from './utils/api.js';
 
 document.documentElement.classList.add('has-js');
 
@@ -11,9 +11,10 @@ const state = {
   isLoggedIn: false,
   authBound: false,
   profile: {
-    name: 'Matěj Kořínek',
-    initials: 'MK',
-    email: 'matej.korinek@studenti.czu.cz'
+    name: 'Student ČZU',
+    initials: 'SČ',
+    email: '',
+    role: 'student'
   },
   userVehicles: [],
   accountLoaded: false,
@@ -25,6 +26,7 @@ const AUTH_STORAGE_KEY = 'faremspolu-authenticated';
 const NAV_LINKS = [
   { href: 'index.html', label: 'Domů', key: 'home' },
   { href: 'rides.html', label: 'Hledat jízdu', key: 'rides' },
+  { href: 'my-rides.html', label: 'Moje jízdy', key: 'my-rides' },
   { href: 'index.html#next-steps', label: 'O projektu', key: 'about' }
 ];
 
@@ -50,19 +52,6 @@ const offerFormState = {
   }
 };
 
-const ensureToastRoot = () => {
-  let toast = qs('#toast-root');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast-root';
-    toast.className = 'toast';
-    toast.setAttribute('role', 'status');
-    toast.setAttribute('aria-live', 'polite');
-    document.body.appendChild(toast);
-  }
-  return toast;
-};
-
 const computeInitials = (name = '') =>
   name
     .split(' ')
@@ -78,9 +67,19 @@ const applyProfileSnapshot = (accountData = {}) => {
   if (accountData.email) {
     state.profile.email = accountData.email;
   }
+  if (accountData.role) {
+    state.profile.role = accountData.role;
+  }
   if (state.isLoggedIn) {
     updateAuthUI();
   }
+};
+
+const logoutUser = () => {
+  persistLoginState(false);
+  state.isLoggedIn = false;
+  state.profile = { name: 'Student ČZU', initials: 'SČ', email: '', role: 'student' };
+  window.location.replace('landing.html');
 };
 
 const renderHeader = (activeKey, { navLinks = NAV_LINKS, showGuestNav = false } = {}) => {
@@ -106,8 +105,13 @@ const renderHeader = (activeKey, { navLinks = NAV_LINKS, showGuestNav = false } 
     </div>
   `;
 
+  const adminBtn = state.profile.role === 'admin' 
+    ? `<a class="btn btn--secondary" href="admin_index.html" style="margin-right: 0.5rem; white-space: nowrap;">Administrace</a>` 
+    : '';
+
   const memberActions = `
     <div class="site-header__quick" data-auth-quick>
+      ${adminBtn}
       <a class="btn btn--ghost" href="rides.html">Najít jízdu</a>
       <button class="btn btn--secondary" type="button" data-modal-open="offer-modal">Přidat jízdu</button>
     </div>
@@ -120,6 +124,9 @@ const renderHeader = (activeKey, { navLinks = NAV_LINKS, showGuestNav = false } 
       >
         <span class="site-header__avatar" data-auth-initials aria-hidden="true">${state.profile.initials}</span>
         <span class="site-header__profile-name" data-auth-name aria-hidden="true">${firstName}</span>
+      </button>
+      <button class="btn btn--ghost" type="button" data-auth-logout style="margin-left: 0.5rem; padding: 0.5rem;" title="Odhlásit" aria-label="Odhlásit">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
       </button>
     </div>
   `;
@@ -205,6 +212,14 @@ const ensureModals = () => {
             <label class="input" for="offer-capacity">
               <span class="input__label">Volná místa</span>
               <input id="offer-capacity" name="capacity" type="number" min="1" max="6" required />
+            </label>
+            <label class="input" for="offer-price">
+              <span class="input__label">Cena (Kč / osoba)</span>
+              <input id="offer-price" name="price" type="number" min="0" step="10" value="0" required />
+            </label>
+            <label class="input" for="offer-duration">
+              <span class="input__label">Předpokládaná doba jízdy</span>
+              <input id="offer-duration" name="duration" type="text" placeholder="např. 0:45 nebo 1:30" />
             </label>
             <div class="input input--switch">
               <span class="input__label">Směr jízdy</span>
@@ -750,23 +765,23 @@ const setupModalInteractions = () => {
   const offerForm = qs('#offer-form');
   if (offerForm && !offerForm.dataset.bound) {
     offerForm.dataset.bound = 'true';
-    offerForm.addEventListener('submit', (event) => {
+    offerForm.addEventListener('submit', async (event) => {
       event.preventDefault();
+      clearValidation(offerForm);
       updateDirectionFields();
       if (!offerForm.checkValidity()) {
         offerForm.reportValidity();
         return;
       }
+      const submitBtn = qs('button[type="submit"]', offerForm);
       const originInput = qs('#offer-origin', offerForm);
       const destinationInput = qs('#offer-destination', offerForm);
       if (offerFormState.direction === 'to' && !originInput?.value.trim()) {
-        showToast('Doplň odkud jedeš.', 'error');
-        originInput?.focus();
+        showValidationError(originInput, 'Doplň odkud jedeš.');
         return;
       }
       if (offerFormState.direction === 'from' && !destinationInput?.value.trim()) {
-        showToast('Doplň kam jedeš.', 'error');
-        destinationInput?.focus();
+        showValidationError(destinationInput, 'Doplň kam jedeš.');
         return;
       }
       const formData = new FormData(offerForm);
@@ -778,38 +793,53 @@ const setupModalInteractions = () => {
       formData.set('tags', offerFormState.tags.join(','));
       const payload = Object.fromEntries(formData.entries());
       payload.tags = [...offerFormState.tags];
-      const selectedVehicle = state.userVehicles.find((vehicle) => vehicle.id === payload.car);
+      const selectedVehicle = state.userVehicles.find((v) => v.id === payload.car);
       if (selectedVehicle) {
         payload.vehicle = selectedVehicle;
       }
-      console.info('Odeslání nabídky jízdy', payload);
-      // TODO: Odeslat data do PHP API.
-      offerForm.reset();
-      resetOfferFormState();
-      refreshOfferTags();
-      updateDirectionButtons();
-      updateDirectionFields();
-      closeModal();
-      showToast('Jízda byla odeslána ke schválení.');
+      try {
+        submitBtn.classList.add('is-loading');
+        await api.rides.create(payload);
+        offerForm.reset();
+        resetOfferFormState();
+        refreshOfferTags();
+        updateDirectionButtons();
+        updateDirectionFields();
+        closeModal();
+        showToast('Jízda byla odeslána ke schválení.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Nepodařilo se přidat jízdu.', 'error');
+      } finally {
+        submitBtn.classList.remove('is-loading');
+      }
     });
   }
 
   const requestForm = qs('#request-form');
   if (requestForm && !requestForm.dataset.bound) {
     requestForm.dataset.bound = 'true';
-    requestForm.addEventListener('submit', (event) => {
+    requestForm.addEventListener('submit', async (event) => {
       event.preventDefault();
+      clearValidation(requestForm);
       if (!requestForm.checkValidity()) {
         requestForm.reportValidity();
         return;
       }
-      const formData = new FormData(requestForm);
-      const payload = Object.fromEntries(formData.entries());
-      console.info('Žádost o místo', payload);
-      // TODO: Odeslat žádost na serverovou část.
-      requestForm.reset();
-      closeModal();
-      showToast('Žádost byla odeslána řidiči.');
+      const submitBtn = qs('button[type="submit"]', requestForm);
+      try {
+        submitBtn.classList.add('is-loading');
+        const formData = new FormData(requestForm);
+        const payload = Object.fromEntries(formData.entries());
+        const fakeRideId = new URLSearchParams(window.location.search).get('id') || Date.now();
+        await api.rides.requestSeat(fakeRideId, payload);
+        requestForm.reset();
+        closeModal();
+        showToast('Žádost byla úspěšně odeslána řidiči.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Nepodařilo se odeslat žádost.', 'error');
+      } finally {
+        submitBtn.classList.remove('is-loading');
+      }
     });
   }
 };
@@ -849,7 +879,7 @@ const loadAccountSnapshot = async () => {
   if (state.accountLoaded || state.accountLoading || !state.isLoggedIn) return;
   state.accountLoading = true;
   try {
-    const account = await getAccountOverview();
+    const account = await api.user.getAccountOverview();
     if (account?.vehicles) {
       syncUserVehicles(account.vehicles);
     }
@@ -877,8 +907,11 @@ const persistLoginState = (value) => {
   try {
     if (value) {
       window.sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
+      window.sessionStorage.setItem('faremspolu-profile', JSON.stringify(state.profile));
     } else {
       window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+      window.sessionStorage.removeItem('faremspolu-profile');
+      window.localStorage.removeItem('auth_token'); // Odhlásí i z fetch API
     }
   } catch (error) {
     console.warn('Nepodařilo se uložit stav přihlášení', error);
@@ -908,7 +941,7 @@ const updateAuthUI = () => {
 
 };
 
-const loginUser = (overrideName, email) => {
+const loginUser = (overrideName, email, role) => {
   if (state.isLoggedIn) return;
   if (overrideName) {
     state.profile.name = overrideName;
@@ -917,65 +950,114 @@ const loginUser = (overrideName, email) => {
   if (email) {
     state.profile.email = email;
   }
+  if (role) {
+    state.profile.role = role;
+  }
   state.isLoggedIn = true;
   persistLoginState(true);
   updateAuthUI();
   showToast('Vítej zpět ve FaremSpolu!');
-  window.location.href = 'index.html';
+  
+  if (state.profile.role === 'admin') {
+    window.location.href = 'admin_index.html';
+  } else {
+    window.location.href = 'index.html';
+  }
 };
 
-const handleLoginSubmit = (event) => {
+const handleLoginSubmit = async (event) => {
   event.preventDefault();
   const form = event.target;
-  const email = form.email.value.trim();
-  const password = form.password.value.trim();
+  clearValidation(form);
+
   const errorBox = qs('[data-auth-error]', form);
-  if (!email || !password) {
-    errorBox.textContent = 'Vyplň prosím e-mail i heslo.';
+  if (errorBox) errorBox.textContent = '';
+  
+  if (!form.checkValidity()) {
+    form.reportValidity();
     return;
   }
-  errorBox.textContent = '';
-  closeModal();
-  loginUser(undefined, email);
+  
+  const submitBtn = qs('button[type="submit"]', form);
+  const emailInput = qs('#login-email', form);
+  const email = form.email.value.trim();
+  const password = form.password.value.trim();
+  let hasError = false;
+  
+  if (!email.includes('@czu.cz') && !email.includes('@studenti.czu.cz')) {
+    showValidationError(emailInput, 'E-mail musí patřit doméně ČZU.');
+    hasError = true;
+  }
+  
+  if (hasError) return;
+  
+  try {
+    submitBtn.classList.add('is-loading');
+    const response = await api.auth.login(email, password);
+    loginUser(response.user.name, email, response.user.role);
+    form.reset();
+    closeModal();
+  } catch (err) {
+    if (errorBox) errorBox.textContent = err.message || 'Chyba serveru.';
+  } finally {
+    submitBtn.classList.remove('is-loading');
+  }
 };
 
-const handleRegisterSubmit = (event) => {
+const handleRegisterSubmit = async (event) => {
   event.preventDefault();
   const form = event.target;
+  clearValidation(form);
+  
+  const errorBox = qs('[data-auth-error]', form);
+  if (errorBox) errorBox.textContent = '';
+  
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  const submitBtn = qs('button[type="submit"]', form);
+  const emailInput = qs('#register-email', form);
+  const pwdInput = qs('#register-password', form);
+  const cnfInput = qs('#register-confirm', form);
+  
   const email = form.email.value.trim();
   const password = form.password.value.trim();
   const confirm = form.confirm.value.trim();
   const firstName = form.firstName.value.trim();
   const lastName = form.lastName.value.trim();
   const gender = form.gender.value;
-  const errorBox = qs('[data-auth-error]', form);
-
-  const emailPattern = /@(czu\.cz|studenti\.czu\.cz)$/i;
-  const hasMinLength = password.length >= 6;
-  const hasNumber = /\d/.test(password);
-  const hasUpper = /[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/.test(password);
-
-  if (!emailPattern.test(email)) {
-    errorBox.textContent = 'Použij školní e-mail s doménou czu.cz nebo studenti.czu.cz.';
-    return;
-  }
-  if (!hasMinLength || !hasNumber || !hasUpper) {
-    errorBox.textContent = 'Heslo musí mít min. 6 znaků, obsahovat číslo a velké písmeno.';
-    return;
+  
+  let hasError = false;
+  if (!email.includes('@czu.cz') && !email.includes('@studenti.czu.cz')) {
+    showValidationError(emailInput, 'Registrace je možná jen se školním e-mailem.');
+    hasError = true;
   }
   if (password !== confirm) {
-    errorBox.textContent = 'Hesla se neshodují.';
-    return;
+    showValidationError(cnfInput, 'Hesla se neshodují.');
+    hasError = true;
   }
-  if (!firstName || !lastName || !gender) {
-    errorBox.textContent = 'Doplň své jméno, příjmení i gender.';
-    return;
+  if (password.length < 6) {
+    showValidationError(pwdInput, 'Heslo musí mít minimálně 6 znaků.');
+    hasError = true;
   }
-
-  errorBox.textContent = '';
-  const fullName = `${firstName} ${lastName}`.trim();
-  closeModal();
-  loginUser(fullName, email);
+  
+  if (hasError) return;
+  
+  try {
+    submitBtn.classList.add('is-loading');
+    const payload = Object.fromEntries(new FormData(form).entries());
+    const response = await api.auth.register(payload);
+    
+    loginUser(response.user.name, email, response.user.role);
+    form.reset();
+    closeModal();
+  } catch (err) {
+    if (errorBox) errorBox.textContent = err.message || 'Nepovedlo se dokončit registraci.';
+  } finally {
+    submitBtn.classList.remove('is-loading');
+  }
 };
 
 const setupAuthControls = () => {
@@ -1000,6 +1082,11 @@ const setupAuthControls = () => {
     window.location.href = 'account.html';
   });
 
+  delegate('click', '[data-auth-logout]', (event) => {
+    event.preventDefault();
+    logoutUser();
+  });
+
   const loginForm = qs('#login-form');
   if (loginForm && !loginForm.dataset.bound) {
     loginForm.dataset.bound = 'true';
@@ -1015,22 +1102,6 @@ const setupAuthControls = () => {
   state.authBound = true;
 };
 
-export const showToast = (message, type = 'info') => {
-  const toast = ensureToastRoot();
-  toast.textContent = message;
-  toast.classList.remove('toast--visible', 'toast--error');
-  if (type === 'error') {
-    toast.classList.add('toast--error');
-  }
-  window.clearTimeout(state.toastTimeout);
-  requestAnimationFrame(() => {
-    toast.classList.add('toast--visible');
-  });
-  state.toastTimeout = window.setTimeout(() => {
-    toast.classList.remove('toast--visible');
-  }, 3500);
-};
-
 export const initBase = (activeKey = '', options = {}) => {
   const { allowGuests = false, guestNavLinks = GUEST_NAV_LINKS, resetAuth = false } = options;
 
@@ -1039,6 +1110,13 @@ export const initBase = (activeKey = '', options = {}) => {
   }
 
   state.isLoggedIn = readLoginState();
+
+  if (state.isLoggedIn) {
+     try {
+       const p = window.sessionStorage.getItem('faremspolu-profile');
+       if (p) Object.assign(state.profile, JSON.parse(p));
+     } catch(e) {}
+  }
 
   const isLandingPage = document.body?.dataset.page === 'landing' || window.location.pathname.endsWith('landing.html');
 
@@ -1056,7 +1134,6 @@ export const initBase = (activeKey = '', options = {}) => {
 
   renderHeader(activeKey, { navLinks, showGuestNav: !state.isLoggedIn && allowGuests });
   renderFooter();
-  ensureToastRoot();
   setupHeaderMenu();
   setupAuthControls();
   setupFooterMeta();
@@ -1067,3 +1144,9 @@ export const initBase = (activeKey = '', options = {}) => {
 };
 
 export const utils = { openModal, closeModal };
+
+
+
+
+
+

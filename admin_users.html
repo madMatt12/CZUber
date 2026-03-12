@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Správa uživatelů – Admin FaremSpolu</title>
+    <meta name="description" content="Správa uživatelů na platformě FaremSpolu." />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar" aria-label="Administrátorská navigace">
+        <a href="index.html" class="admin-sidebar__brand">
+          <img src="assets/img/logo.svg" alt="FaremSpolu" />
+          FaremSpolu Admin
+        </a>
+        <nav class="admin-nav">
+          <a href="admin_index.html" class="admin-nav__link">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            Přehled
+          </a>
+          <a href="admin_users.html" class="admin-nav__link" aria-current="page">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            Uživatelé
+          </a>
+          <a href="admin_rides.html" class="admin-nav__link">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            Správa jízd
+          </a>
+          <a href="admin_vehicles.html" class="admin-nav__link">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            Vozidla
+          </a>
+        </nav>
+        <div style="padding: 1rem; margin-top: auto;">
+          <button class="btn btn--secondary" style="width: 100%;" onclick="window.location.href='index.html'">Zpět na web</button>
+        </div>
+      </aside>
+
+      <main class="admin-content">
+        <header class="admin-header">
+          <h1 class="admin-title">Uživatelé platformy</h1>
+          <div class="site-header__auth">
+            <button class="site-header__profile" type="button" aria-label="Profil administrátora">
+              <span class="site-header__avatar" aria-hidden="true">AD</span>
+              <span class="site-header__profile-name" aria-hidden="true">Admin</span>
+            </button>
+            <button class="btn btn--ghost" type="button" onclick="sessionStorage.clear(); localStorage.removeItem('auth_token'); window.location.href='landing.html';" style="margin-left: 0.5rem; padding: 0.5rem;" title="Odhlásit" aria-label="Odhlásit">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
+          </div>
+        </header>
+
+        <form class="admin-filters" id="user-filter-form">
+          <div class="input" style="flex: 1; min-width: 200px;">
+            <label for="filter-user-search" class="sr-only">Hledat uživatele</label>
+            <input type="text" id="filter-user-search" placeholder="Hledat podle jména nebo e-mailu..." />
+          </div>
+          <div class="input" style="flex: 0 0 auto;">
+            <label for="filter-user-role" class="sr-only">Role</label>
+            <select id="filter-user-role">
+              <option value="">Všechny role</option>
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="input" style="flex: 0 0 auto;">
+            <label for="filter-user-status" class="sr-only">Status</label>
+            <select id="filter-user-status">
+              <option value="">Všechny stavy</option>
+              <option value="active">Aktivní</option>
+              <option value="blocked">Zablokovaní</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn--secondary" style="flex: 0 0 auto;">Filtrovat</button>
+        </form>
+
+        <section class="card">
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>E-mail</th>
+                  <th>Jméno a Příjmení</th>
+                  <th>Role</th>
+                  <th>Status Účtu</th>
+                  <th>Akce</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr><td colspan="5" style="text-align:center; color: #999;">Načítám…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const API_BASE = 'api/index.php?action=';
+      const token = localStorage.getItem('auth_token') || '';
+      const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+      let allUsers = [];
+
+      function renderUsers(users) {
+        const tbody = document.getElementById('users-tbody');
+        if (!users.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #999;">Žádní uživatelé.</td></tr>';
+          return;
+        }
+        const statusMap = { active: 'Aktivní', blocked: 'Zablokován' };
+        const statusClass = { active: 'status--active', blocked: 'status--blocked' };
+        
+        tbody.innerHTML = users.map(u => `
+          <tr>
+            <td>${u.email}</td>
+            <td>${u.first_name} ${u.last_name}</td>
+            <td>${u.role === 'admin' ? 'Admin' : 'Student'}</td>
+            <td><span class="status ${statusClass[u.status] || 'status--active'}">${statusMap[u.status] || u.status}</span></td>
+            <td>
+              ${u.status === 'blocked' 
+                ? `<button class="btn btn--ghost" style="padding: 0.25rem 0.75rem; font-size: 0.9rem;" onclick="toggleUser(${u.id}, 'unblock')">Odblokovat</button>`
+                : `<button class="btn btn--ghost" style="padding: 0.25rem 0.75rem; font-size: 0.9rem;" onclick="toggleUser(${u.id}, 'block')">Zablokovat</button>`
+              }
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      async function loadUsers() {
+        try {
+          const res = await fetch(API_BASE + 'admin/users', { headers });
+          const json = await res.json();
+          allUsers = Array.isArray(json) ? json : [];
+          renderUsers(allUsers);
+        } catch(e) { console.error(e); }
+      }
+
+      async function toggleUser(userId, action) {
+        try {
+          await fetch(API_BASE + 'admin/users', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ userId, action })
+          });
+          loadUsers();
+        } catch(e) { alert('Chyba: ' + e.message); }
+      }
+
+      document.getElementById('user-filter-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const search = document.getElementById('filter-user-search').value.toLowerCase();
+        const role = document.getElementById('filter-user-role').value;
+        const status = document.getElementById('filter-user-status').value;
+        
+        let filtered = allUsers;
+        if (search) filtered = filtered.filter(u => u.email.toLowerCase().includes(search) || (u.first_name + ' ' + u.last_name).toLowerCase().includes(search));
+        if (role) filtered = filtered.filter(u => u.role === role);
+        if (status) filtered = filtered.filter(u => u.status === status);
+        renderUsers(filtered);
+      });
+
+      loadUsers();
+    </script>
+  </body>
+</html>

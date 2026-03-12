@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Detail jízdy – Admin FaremSpolu</title>
+    <meta name="description" content="Detail navržené jízdy." />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar" aria-label="Administrátorská navigace">
+        <a href="index.html" class="admin-sidebar__brand">
+          <img src="assets/img/logo.svg" alt="FaremSpolu" />
+          FaremSpolu Admin
+        </a>
+        <nav class="admin-nav">
+          <a href="admin_index.html" class="admin-nav__link">Přehled</a>
+          <a href="admin_users.html" class="admin-nav__link">Uživatelé</a>
+          <a href="admin_rides.html" class="admin-nav__link" aria-current="page">Správa jízd</a>
+          <a href="admin_vehicles.html" class="admin-nav__link">Vozidla</a>
+        </nav>
+      </aside>
+
+      <main class="admin-content">
+        <header class="admin-header">
+          <div>
+            <a href="admin_rides.html" style="color: var(--color-gray-500); text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 0.5rem;">&larr; Zpět na seznam jízd</a>
+            <h1 class="admin-title">Detail jízdy: Kolín &rarr; ČZU</h1>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+             <button class="btn btn--primary">Povolit jízdu</button>
+             <button class="btn btn--ghost" style="color: #d12e2e; border-color: #d12e2e;">Zamítnout</button>
+          </div>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6);">
+          <section class="card">
+            <h2 style="font-size: 1.25rem; margin-bottom: var(--space-4);">Cesta a čas</h2>
+            <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem;">
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Z (Start)</dt>
+              <dd>Hlavní nádraží Kolín</dd>
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Do (Cíl)</dt>
+              <dd>ČZU Koleje (parkoviště P1)</dd>
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Odjezd</dt>
+              <dd>24. 10. 2026, 08:30</dd>
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Kapacita</dt>
+              <dd>Volná 3 místa z celkových 4</dd>
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Cena za osobu</dt>
+              <dd>80 Kč</dd>
+            </dl>
+          </section>
+
+          <section class="card">
+            <h2 style="font-size: 1.25rem; margin-bottom: var(--space-4);">Řidič a Vůz</h2>
+            <div style="margin-bottom: 1rem;">
+              <strong>Jan Novák</strong> <br />
+              <a href="admin_user_detail.html" style="font-size: 0.9rem; color: var(--color-green-700);">jan.novak@studenti.czu.cz</a>
+            </div>
+            <div style="padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.1);">
+              <div style="font-weight: 600; margin-bottom: 0.25rem;">Zvolené auto:</div>
+              <div style="font-size: 0.95rem;">Škoda Octavia (Bílá)</div>
+              <div style="font-size: 0.85rem; color: var(--color-gray-500);">SPZ: 1AA 2233</div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

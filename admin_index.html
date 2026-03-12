@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard – FaremSpolu</title>
+  <meta name="description" content="Administrační rozhraní projektu FaremSpolu." />
+  <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/reset.css" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" aria-label="Administrátorská navigace">
+      <a href="index.html" class="admin-sidebar__brand" aria-label="Zpět na web">
+        <img src="assets/img/logo.svg" alt="FaremSpolu" />
+        FaremSpolu Admin
+      </a>
+      <nav class="admin-nav">
+        <a href="admin_index.html" class="admin-nav__link" aria-current="page">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+            </path>
+          </svg>
+          Přehled
+        </a>
+        <a href="admin_users.html" class="admin-nav__link">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+            </path>
+          </svg>
+          Uživatelé
+        </a>
+        <a href="admin_rides.html" class="admin-nav__link">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+          </svg>
+          Správa jízd
+        </a>
+        <a href="admin_vehicles.html" class="admin-nav__link">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+            </path>
+          </svg>
+          Vozidla
+        </a>
+      </nav>
+      <div style="padding: 1rem; margin-top: auto;">
+        <button class="btn btn--secondary" style="width: 100%;" onclick="window.location.href='index.html'">Zpět na
+          web</button>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+      <header class="admin-header">
+        <h1 class="admin-title">Rychlý přehled</h1>
+        <div class="site-header__auth">
+          <button class="site-header__profile" type="button" aria-label="Profil administrátora">
+            <span class="site-header__avatar" aria-hidden="true">AD</span>
+            <span class="site-header__profile-name" aria-hidden="true">Admin</span>
+          </button>
+          <button class="btn btn--ghost" type="button" onclick="sessionStorage.clear(); localStorage.removeItem('auth_token'); window.location.href='landing.html';" style="margin-left: 0.5rem; padding: 0.5rem;" title="Odhlásit" aria-label="Odhlásit">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="stat-grid" aria-label="Statistiky platformy">
+        <div class="stat-card">
+          <span class="stat-card__label">Registrovaných studentů</span>
+          <span class="stat-card__value" id="stat-users">–</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__label">Aktivních jízd</span>
+          <span class="stat-card__value" id="stat-rides">–</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__label">Čeká na schválení</span>
+          <span class="stat-card__value" id="stat-pending">–</span>
+          <span class="stat-card__trend stat-card__trend--down">
+            Žádosti o místo
+          </span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section__title" style="font-size: 1.25rem;">Poslední žádosti o místo</h2>
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Pasažér</th>
+                <th>Jízda</th>
+                <th>Zpráva</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recent-requests-body">
+              <tr><td colspan="4" style="text-align:center; color: #999;">Načítám…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = 'api/index.php?action=';
+    const token = localStorage.getItem('auth_token') || '';
+    const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+
+    async function loadStats() {
+      try {
+        const res = await fetch(API_BASE + 'admin/stats', { headers });
+        const json = await res.json();
+        if (json && !json.error) {
+          document.getElementById('stat-users').textContent = json.usersCount;
+          document.getElementById('stat-rides').textContent = json.ridesCount;
+          document.getElementById('stat-pending').textContent = json.pendingRequests;
+        }
+      } catch(e) { console.error('Stats error:', e); }
+    }
+
+    async function loadRecentRequests() {
+      try {
+        const res = await fetch(API_BASE + 'admin/rides', { headers });
+        const json = await res.json();
+        const rides = Array.isArray(json) ? json : [];
+        // Get all ride IDs and fetch their requests
+        // For simplicity, show rides with pending status
+        const tbody = document.getElementById('recent-requests-body');
+        
+        // We'll show the latest rides as a quick overview
+        if (rides.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: #999;">Žádné jízdy v systému.</td></tr>';
+          return;
+        }
+        
+        const statusMap = { active: 'Aktivní', cancelled: 'Zrušeno', completed: 'Dokončeno', full: 'Plná' };
+        const statusClass = { active: 'status--active', cancelled: 'status--blocked', completed: 'status--active', full: 'status--pending' };
+        
+        tbody.innerHTML = rides.slice(0, 5).map(r => `
+          <tr>
+            <td>${r.first_name} ${r.last_name}</td>
+            <td><b>${r.origin}</b> → ${r.destination}</td>
+            <td>${r.departure || '–'}</td>
+            <td><span class="status ${statusClass[r.status] || ''}">${statusMap[r.status] || r.status}</span></td>
+          </tr>
+        `).join('');
+      } catch(e) { console.error('Requests error:', e); }
+    }
+
+    loadStats();
+    loadRecentRequests();
+  </script>
+</body>
+
+</html>

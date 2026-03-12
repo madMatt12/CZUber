@@ -1,5 +1,5 @@
-import { initBase, showToast, syncUserVehicles } from '../main.js';
-import { getAccountOverview } from '../data.js';
+import { initBase, syncUserVehicles } from '../main.js';
+import { api, showToast, clearValidation, showValidationError } from '../utils/api.js';
 import { qs } from '../utils/dom.js';
 
 const ENGINE_LABELS = {
@@ -142,8 +142,9 @@ const setupVehicleForm = () => {
   if (!form || form.dataset.bound) return;
 
   form.dataset.bound = 'true';
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    clearValidation(form);
 
     if (!form.checkValidity()) {
       form.reportValidity();
@@ -156,39 +157,54 @@ const setupVehicleForm = () => {
     }
 
     const formData = new FormData(form);
+    const brandInput = qs('#vehicle-brand', form);
+    const modelInput = qs('#vehicle-model', form);
+    const colorInput = qs('#vehicle-color', form);
+    const plateInput = qs('#vehicle-plate', form);
+    const engineInput = qs('#vehicle-engine', form);
+
     const brand = cleanInput(formData.get('brand') || '');
     const model = cleanInput(formData.get('model') || '');
     const color = cleanInput(formData.get('color') || '');
     const plate = formatPlate(formData.get('plate') || '');
     const engine = formData.get('engine');
 
-    if (!brand || !model || !color || !plate || !engine) {
-      showToast('Vyplň všechna povinná pole.', 'error');
-      return;
+    let hasError = false;
+    if (!brand) { showValidationError(brandInput, 'Vyplň značku.'); hasError = true; }
+    if (!model) { showValidationError(modelInput, 'Vyplň model.'); hasError = true; }
+    if (!color) { showValidationError(colorInput, 'Vyplň barvu.'); hasError = true; }
+    if (!plate) { showValidationError(plateInput, 'Vyplň SPZ.'); hasError = true; }
+    if (!engine) { showValidationError(engineInput, 'Vyber pohon.'); hasError = true; }
+
+    if (hasError) return;
+
+    const submitBtn = qs('button[type="submit"]', form);
+
+    try {
+      submitBtn.classList.add('is-loading');
+      
+      const payload = { brand, model, color, plate, engine };
+      const newVehicle = await api.user.addVehicle(payload);
+
+      accountState.vehicles = [...(accountState.vehicles || []), newVehicle];
+      renderVehicles(accountState.vehicles);
+      syncUserVehicles(accountState.vehicles);
+      
+      showToast('Vozidlo bylo úspěšně přidáno.', 'success');
+      form.reset();
+      brandInput?.focus();
+    } catch (err) {
+      showToast(err.message || 'Nepodařilo se přidat vozidlo.', 'error');
+    } finally {
+      submitBtn.classList.remove('is-loading');
     }
-
-    const vehicle = {
-      id: `vehicle-${Date.now()}`,
-      brand,
-      model,
-      color,
-      plate,
-      engine
-    };
-
-    accountState.vehicles = [...(accountState.vehicles || []), vehicle];
-    renderVehicles(accountState.vehicles);
-    syncUserVehicles(accountState.vehicles);
-    showToast('Vozidlo bylo přidáno do profilu.');
-    form.reset();
-    qs('#vehicle-brand', form)?.focus();
   });
 };
 
 const main = async () => {
   initBase('account');
   try {
-    const data = await getAccountOverview();
+    const data = await api.user.getAccountOverview();
     accountState = {
       ...data,
       driverRides: Array.isArray(data.driverRides) ? [...data.driverRides] : [],
@@ -208,3 +224,4 @@ if (document.readyState === 'loading') {
 } else {
   main();
 }
+

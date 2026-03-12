@@ -1,5 +1,5 @@
-import { initBase, showToast } from '../main.js';
-import { getRideById } from '../data.js';
+import { initBase } from '../main.js';
+import { showToast, api } from '../utils/api.js';
 import { qs } from '../utils/dom.js';
 
 const formatLongDate = (iso) => {
@@ -17,11 +17,11 @@ const renderReviews = (ride) => {
   const list = qs('[data-ride-reviews]');
   if (!list) return;
   list.innerHTML = '';
-  if (!ride.reviews.length) {
+  if (!ride.reviews || !ride.reviews.length) {
     list.innerHTML = '<li>Žádná hodnocení zatím nejsou.</li>';
     return;
   }
-  ride.reviews.forEach((review) => {
+  (ride.reviews || []).forEach((review) => {
     const item = document.createElement('li');
     const ratingStars = '★'.repeat(Math.round(review.rating));
     item.innerHTML = `
@@ -51,13 +51,13 @@ const hydrateRideDetail = (ride) => {
   if (dateEl) dateEl.textContent = formatLongDate(ride.departure);
   if (departure) departure.textContent = formatLongDate(ride.departure);
   if (meeting) meeting.textContent = ride.meetingPoint;
-  if (distance) distance.textContent = `${ride.duration} • ${ride.distance}`;
+  if (distance) distance.textContent = `${ride.duration || '–'} • ${ride.distance || 'Spolujízda'}`;
   if (price) price.textContent = `${ride.price} ${ride.currency} / osoba`;
   if (description) description.textContent = ride.description;
   if (tags) {
-    tags.innerHTML = ride.tags.map((tag) => `<span class="tag">${tag}</span>`).join('');
+    tags.innerHTML = (ride.tags || []).map((tag) => `<span class="tag">${tag}</span>`).join('');
   }
-  if (score) score.textContent = `${ride.driver.rating.toFixed(1)}★`;
+  if (score) score.textContent = `${(ride.driver?.rating || 5).toFixed(1)}★`;
   const requestButtons = document.querySelectorAll('[data-modal-open="request-modal"]');
   requestButtons.forEach((button) => {
     button.setAttribute('data-ride-title', `${ride.from} → ${ride.to}`);
@@ -104,7 +104,7 @@ const main = async () => {
     return;
   }
   try {
-    const ride = await getRideById(rideId);
+    const ride = await api.rides.getRideById(rideId);
     if (!ride) {
       renderNotFound();
       return;
@@ -121,3 +121,4 @@ if (document.readyState === 'loading') {
 } else {
   main();
 }
+

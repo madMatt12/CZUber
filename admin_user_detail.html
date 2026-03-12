@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Detail uživatele – Admin FaremSpolu</title>
+    <meta name="description" content="Detail uživatele na platformě FaremSpolu." />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar" aria-label="Administrátorská navigace">
+        <a href="index.html" class="admin-sidebar__brand">
+          <img src="assets/img/logo.svg" alt="FaremSpolu" />
+          FaremSpolu Admin
+        </a>
+        <nav class="admin-nav">
+          <a href="admin_index.html" class="admin-nav__link">Přehled</a>
+          <a href="admin_users.html" class="admin-nav__link" aria-current="page">Uživatelé</a>
+          <a href="admin_rides.html" class="admin-nav__link">Správa jízd</a>
+          <a href="admin_vehicles.html" class="admin-nav__link">Vozidla</a>
+        </nav>
+      </aside>
+
+      <main class="admin-content">
+        <header class="admin-header">
+          <div>
+            <a href="admin_users.html" style="color: var(--color-gray-500); text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 0.5rem;">&larr; Zpět na seznam uživatelů</a>
+            <h1 class="admin-title">Detail uživatele: Jan Novák</h1>
+          </div>
+          <div>
+             <button class="btn btn--ghost" style="color: #d12e2e; border-color: #d12e2e;">Zablokovat účet</button>
+          </div>
+        </header>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6);">
+          <section class="card">
+            <h2 style="font-size: 1.25rem; margin-bottom: var(--space-4);">Osobní údaje</h2>
+            <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem;">
+              <dt style="font-weight: 600; color: var(--color-gray-600);">E-mail</dt>
+              <dd>jan.novak@studenti.czu.cz</dd>
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Telefon</dt>
+              <dd>+420 123 456 789 (Neověřeno)</dd>
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Role</dt>
+              <dd>Student</dd>
+              <dt style="font-weight: 600; color: var(--color-gray-600);">Registrace</dt>
+              <dd>12. 10. 2026</dd>
+            </dl>
+          </section>
+          
+          <section class="card">
+            <h2 style="font-size: 1.25rem; margin-bottom: var(--space-4);">Vozidla uživatele</h2>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem;">
+              <li style="border: 1px solid rgba(0,0,0,0.1); padding: 1rem; border-radius: var(--radius-sm);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <strong>Škoda Octavia (Bílá)</strong>
+                  <span class="badge" style="background: rgba(0,0,0,0.05);">Diesel</span>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--color-gray-600);">SPZ: 1AA 2233</div>
+              </li>
+              <li style="border: 1px dashed rgba(0,0,0,0.2); padding: 1rem; border-radius: var(--radius-sm); text-align: center; color: var(--color-gray-500);">
+                Žádná další vozidla
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <section class="card">
+          <h2 style="font-size: 1.25rem; margin-bottom: var(--space-4);">Historie jízd (jako řidič)</h2>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Datum</th>
+                  <th>Trasa</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>24. 10. 2026</td>
+                  <td>Kolín &rarr; ČZU</td>
+                  <td><span class="status status--active">Aktivní</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </body>
+</html>

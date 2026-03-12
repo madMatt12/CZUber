@@ -1,5 +1,5 @@
-import { initBase, showToast } from '../main.js';
-import { getFeaturedRides } from '../data.js';
+import { initBase } from '../main.js';
+import { showToast, api } from '../utils/api.js';
 import { initScrollAnimations } from '../utils/animate.js';
 import { qs } from '../utils/dom.js';
 
@@ -52,7 +52,7 @@ const renderFeaturedRides = async () => {
 
   container.innerHTML = '<p>Načítám nejbližší jízdy...</p>';
   try {
-    const rides = await getFeaturedRides();
+    const rides = await api.rides.getFeaturedRides();
     if (!rides.length) {
       container.innerHTML = '<p>Aktuálně nejsou žádné volné jízdy. Zkus to později.</p>';
       return;
@@ -240,3 +240,4 @@ if (document.readyState === 'loading') {
 } else {
   main();
 }
+
