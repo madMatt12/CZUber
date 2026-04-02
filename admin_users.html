@@ -32,10 +32,7 @@
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
             Správa jízd
           </a>
-          <a href="admin_vehicles.html" class="admin-nav__link">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            Vozidla
-          </a>
+
         </nav>
         <div style="padding: 1rem; margin-top: auto;">
           <button class="btn btn--secondary" style="width: 100%;" onclick="window.location.href='index.html'">Zpět na web</button>
@@ -101,12 +98,59 @@
       </main>
     </div>
 
+    <!-- Detail modal container -->
+    <div id="user-detail-overlay" class="admin-modal-overlay" style="display:none;" aria-hidden="true">
+      <div class="admin-detail-modal" id="user-detail-modal" role="dialog" aria-labelledby="user-detail-title">
+        <div class="admin-detail-modal__header">
+          <h2 class="admin-detail-modal__title" id="user-detail-title">
+            <span class="admin-detail-modal__title-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            </span>
+            <span id="user-detail-name">Detail uživatele</span>
+          </h2>
+          <button class="admin-detail-modal__close" id="user-detail-close" aria-label="Zavřít" title="Zavřít">&times;</button>
+        </div>
+        <div class="admin-detail-modal__body" id="user-detail-body">
+          <!-- Dynamic content -->
+        </div>
+        <div class="admin-detail-modal__footer" id="user-detail-footer">
+          <button class="btn btn--edit" id="user-btn-edit" type="button">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Upravit
+          </button>
+          <button class="btn btn--cancel-edit" id="user-btn-cancel" type="button" style="display:none;">Zrušit</button>
+          <button class="btn btn--save" id="user-btn-save" type="button" style="display:none;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            Uložit změny
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="admin-toast" role="status" aria-live="polite"></div>
+
     <script>
       const API_BASE = 'api/index.php?action=';
       const token = localStorage.getItem('auth_token') || '';
       const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
       let allUsers = [];
+      let currentUser = null;
+      let isEditing = false;
 
+      const genderMap = { male: 'Muž', female: 'Žena', other: 'Jiné' };
+      const engineMap = { benzin: 'Benzín', diesel: 'Diesel', lpg: 'LPG', electro: 'Elektro', hybrid: 'Hybrid' };
+
+      // ---- Toast ----
+      function showToast(msg, isError) {
+        const t = document.getElementById('admin-toast');
+        t.textContent = msg;
+        t.className = 'toast toast--animated' + (isError ? ' toast--error' : '');
+        t.style.opacity = '1'; t.style.transform = 'translateX(0)';
+        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(100%)'; }, 3000);
+      }
+
+      // ---- Render table ----
       function renderUsers(users) {
         const tbody = document.getElementById('users-tbody');
         if (!users.length) {
@@ -117,15 +161,15 @@
         const statusClass = { active: 'status--active', blocked: 'status--blocked' };
         
         tbody.innerHTML = users.map(u => `
-          <tr>
+          <tr onclick="openUserDetail(${u.id})" title="Klikni pro detail">
             <td>${u.email}</td>
             <td>${u.first_name} ${u.last_name}</td>
             <td>${u.role === 'admin' ? 'Admin' : 'Student'}</td>
             <td><span class="status ${statusClass[u.status] || 'status--active'}">${statusMap[u.status] || u.status}</span></td>
             <td>
               ${u.status === 'blocked' 
-                ? `<button class="btn btn--ghost" style="padding: 0.25rem 0.75rem; font-size: 0.9rem;" onclick="toggleUser(${u.id}, 'unblock')">Odblokovat</button>`
-                : `<button class="btn btn--ghost" style="padding: 0.25rem 0.75rem; font-size: 0.9rem;" onclick="toggleUser(${u.id}, 'block')">Zablokovat</button>`
+                ? `<button class="btn btn--ghost" style="padding: 0.25rem 0.75rem; font-size: 0.9rem;" onclick="event.stopPropagation(); toggleUser(${u.id}, 'unblock')">Odblokovat</button>`
+                : `<button class="btn btn--ghost" style="padding: 0.25rem 0.75rem; font-size: 0.9rem;" onclick="event.stopPropagation(); toggleUser(${u.id}, 'block')">Zablokovat</button>`
               }
             </td>
           </tr>
@@ -163,6 +207,274 @@
         if (role) filtered = filtered.filter(u => u.role === role);
         if (status) filtered = filtered.filter(u => u.status === status);
         renderUsers(filtered);
+      });
+
+      // ---- Modal ----
+      function openUserDetail(userId) {
+        currentUser = allUsers.find(u => u.id == userId);
+        if (!currentUser) return;
+        isEditing = false;
+        renderUserDetail();
+        const overlay = document.getElementById('user-detail-overlay');
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
+        overlay.classList.remove('closing');
+        document.body.style.overflow = 'hidden';
+        updateFooterButtons();
+      }
+
+      function closeUserDetail() {
+        const overlay = document.getElementById('user-detail-overlay');
+        overlay.classList.add('closing');
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          overlay.setAttribute('aria-hidden', 'true');
+          overlay.classList.remove('closing');
+          document.body.style.overflow = '';
+          isEditing = false;
+        }, 280);
+      }
+
+      function formatDate(iso) {
+        if (!iso) return '–';
+        const d = new Date(iso);
+        return d.toLocaleDateString('cs-CZ') + ' ' + d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function renderUserDetail() {
+        const u = currentUser;
+        const name = u.first_name + ' ' + u.last_name;
+        document.getElementById('user-detail-name').textContent = name;
+        
+        const statusMap = { active: 'Aktivní', blocked: 'Zablokován' };
+        const statusClass = { active: 'status--active', blocked: 'status--blocked' };
+
+        let vehiclesReadHtml = '';
+        if (u.vehicles && u.vehicles.length > 0) {
+          vehiclesReadHtml = u.vehicles.map(v => `
+            <div class="admin-detail-vehicle-card">
+              <div class="admin-detail-vehicle-card__header">
+                <span class="admin-detail-vehicle-card__name">${v.brand} ${v.model}</span>
+                <span class="admin-detail-vehicle-card__badge">${engineMap[v.engine_type] || v.engine_type}</span>
+              </div>
+              <div class="admin-detail-vehicle-card__grid">
+                <div>
+                  <div class="admin-detail-vehicle-card__field-label">SPZ</div>
+                  <div class="admin-detail-vehicle-card__field-value">${v.plate}</div>
+                </div>
+                <div>
+                  <div class="admin-detail-vehicle-card__field-label">Barva</div>
+                  <div class="admin-detail-vehicle-card__field-value">${v.color}</div>
+                </div>
+              </div>
+              <div class="admin-detail-vehicle-card__edit-grid" data-vehicle-id="${v.id}">
+                <div>
+                  <label>Značka</label>
+                  <input class="admin-detail-field__input" data-vfield="brand" value="${v.brand}" />
+                </div>
+                <div>
+                  <label>Model</label>
+                  <input class="admin-detail-field__input" data-vfield="model" value="${v.model}" />
+                </div>
+                <div>
+                  <label>SPZ</label>
+                  <input class="admin-detail-field__input" data-vfield="plate" value="${v.plate}" />
+                </div>
+                <div>
+                  <label>Barva</label>
+                  <input class="admin-detail-field__input" data-vfield="color" value="${v.color}" />
+                </div>
+                <div>
+                  <label>Palivo</label>
+                  <select class="admin-detail-field__select" data-vfield="engine_type">
+                    <option value="benzin" ${v.engine_type==='benzin'?'selected':''}>Benzín</option>
+                    <option value="diesel" ${v.engine_type==='diesel'?'selected':''}>Diesel</option>
+                    <option value="lpg" ${v.engine_type==='lpg'?'selected':''}>LPG</option>
+                    <option value="electro" ${v.engine_type==='electro'?'selected':''}>Elektro</option>
+                    <option value="hybrid" ${v.engine_type==='hybrid'?'selected':''}>Hybrid</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          vehiclesReadHtml = '<div class="admin-detail-empty">Žádná registrovaná vozidla</div>';
+        }
+
+        document.getElementById('user-detail-body').innerHTML = `
+          <div class="admin-detail-section">
+            <div class="admin-detail-section__title">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              Osobní údaje
+            </div>
+            <div class="admin-detail-grid">
+              <div class="admin-detail-field admin-detail-field--readonly">
+                <div class="admin-detail-field__label">ID</div>
+                <div class="admin-detail-field__value">#${u.id}</div>
+              </div>
+              <div class="admin-detail-field">
+                <div class="admin-detail-field__label">E-mail</div>
+                <div class="admin-detail-field__value">${u.email}</div>
+                <input type="email" class="admin-detail-field__input" data-field="email" value="${u.email}" />
+              </div>
+              <div class="admin-detail-field">
+                <div class="admin-detail-field__label">Jméno</div>
+                <div class="admin-detail-field__value">${u.first_name}</div>
+                <input type="text" class="admin-detail-field__input" data-field="first_name" value="${u.first_name}" />
+              </div>
+              <div class="admin-detail-field">
+                <div class="admin-detail-field__label">Příjmení</div>
+                <div class="admin-detail-field__value">${u.last_name}</div>
+                <input type="text" class="admin-detail-field__input" data-field="last_name" value="${u.last_name}" />
+              </div>
+              <div class="admin-detail-field">
+                <div class="admin-detail-field__label">Pohlaví</div>
+                <div class="admin-detail-field__value">${genderMap[u.gender] || u.gender || '–'}</div>
+                <select class="admin-detail-field__select" data-field="gender">
+                  <option value="male" ${u.gender==='male'?'selected':''}>Muž</option>
+                  <option value="female" ${u.gender==='female'?'selected':''}>Žena</option>
+                  <option value="other" ${u.gender==='other'?'selected':''}>Jiné</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-detail-section">
+            <div class="admin-detail-section__title">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              Nastavení účtu
+            </div>
+            <div class="admin-detail-grid">
+              <div class="admin-detail-field">
+                <div class="admin-detail-field__label">Role</div>
+                <div class="admin-detail-field__value">${u.role === 'admin' ? 'Admin' : 'Student'}</div>
+                <select class="admin-detail-field__select" data-field="role">
+                  <option value="student" ${u.role==='student'?'selected':''}>Student</option>
+                  <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                </select>
+              </div>
+              <div class="admin-detail-field">
+                <div class="admin-detail-field__label">Status</div>
+                <div class="admin-detail-field__value"><span class="status ${statusClass[u.status] || ''}">${statusMap[u.status] || u.status}</span></div>
+                <select class="admin-detail-field__select" data-field="status">
+                  <option value="active" ${u.status==='active'?'selected':''}>Aktivní</option>
+                  <option value="blocked" ${u.status==='blocked'?'selected':''}>Zablokován</option>
+                </select>
+              </div>
+              <div class="admin-detail-field admin-detail-field--readonly">
+                <div class="admin-detail-field__label">Registrace</div>
+                <div class="admin-detail-field__value">${formatDate(u.created_at)}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-detail-section">
+            <div class="admin-detail-section__title">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+              Vozidla uživatele
+            </div>
+            <div class="admin-detail-vehicles" id="user-vehicles-container">
+              ${vehiclesReadHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      function updateFooterButtons() {
+        const modal = document.getElementById('user-detail-modal');
+        const btnEdit = document.getElementById('user-btn-edit');
+        const btnCancel = document.getElementById('user-btn-cancel');
+        const btnSave = document.getElementById('user-btn-save');
+
+        if (isEditing) {
+          modal.classList.add('admin-detail-modal--editing');
+          btnEdit.style.display = 'none';
+          btnCancel.style.display = 'inline-flex';
+          btnSave.style.display = 'inline-flex';
+        } else {
+          modal.classList.remove('admin-detail-modal--editing');
+          btnEdit.style.display = 'inline-flex';
+          btnCancel.style.display = 'none';
+          btnSave.style.display = 'none';
+        }
+      }
+
+      // Edit button
+      document.getElementById('user-btn-edit').addEventListener('click', () => {
+        isEditing = true;
+        updateFooterButtons();
+      });
+
+      // Cancel button
+      document.getElementById('user-btn-cancel').addEventListener('click', () => {
+        isEditing = false;
+        renderUserDetail(); // Reset values
+        updateFooterButtons();
+      });
+
+      // Save button
+      document.getElementById('user-btn-save').addEventListener('click', async () => {
+        const body = document.getElementById('user-detail-body');
+        const payload = { userId: currentUser.id };
+
+        // Collect user fields
+        body.querySelectorAll('[data-field]').forEach(el => {
+          payload[el.dataset.field] = el.value;
+        });
+
+        // Collect vehicle edits
+        const vehicleEdits = [];
+        body.querySelectorAll('[data-vehicle-id]').forEach(editGrid => {
+          const vId = editGrid.dataset.vehicleId;
+          const vData = { id: parseInt(vId) };
+          editGrid.querySelectorAll('[data-vfield]').forEach(inp => {
+            vData[inp.dataset.vfield] = inp.value;
+          });
+          vehicleEdits.push(vData);
+        });
+        if (vehicleEdits.length > 0) {
+          payload.vehicles = vehicleEdits;
+        }
+
+        try {
+          const res = await fetch(API_BASE + 'admin/users', {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(payload)
+          });
+          const json = await res.json();
+          if (json.error) {
+            showToast('Chyba: ' + json.error, true);
+            return;
+          }
+          showToast('Uživatel úspěšně aktualizován!');
+          isEditing = false;
+          await loadUsers();
+          // Refresh current user data
+          currentUser = allUsers.find(u => u.id == currentUser.id);
+          if (currentUser) {
+            renderUserDetail();
+          }
+          updateFooterButtons();
+        } catch(e) {
+          showToast('Chyba při ukládání: ' + e.message, true);
+        }
+      });
+
+      // Close modal
+      document.getElementById('user-detail-close').addEventListener('click', closeUserDetail);
+
+      // Close on overlay click
+      document.getElementById('user-detail-overlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeUserDetail();
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const overlay = document.getElementById('user-detail-overlay');
+          if (overlay.style.display !== 'none') closeUserDetail();
+        }
       });
 
       loadUsers();

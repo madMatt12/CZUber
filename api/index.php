@@ -483,9 +483,16 @@ switch ($action) {
         if ($user['role'] !== 'admin') sendError('Přístup odepřen.', 403);
         
         if ($method === 'GET') {
-            $res = $mysqli->query("SELECT id, email, first_name, last_name, role, status, created_at FROM users ORDER BY created_at DESC");
+            $res = $mysqli->query("SELECT id, email, first_name, last_name, gender, role, status, created_at FROM users ORDER BY created_at DESC");
             $users = [];
             while ($row = $res->fetch_assoc()) {
+                // Fetch vehicles for each user
+                $vRes = $mysqli->query("SELECT id, brand, model, plate, color, engine_type FROM vehicles WHERE user_id = {$row['id']}");
+                $vehicles = [];
+                while ($v = $vRes->fetch_assoc()) {
+                    $vehicles[] = $v;
+                }
+                $row['vehicles'] = $vehicles;
                 $users[] = $row;
             }
             sendResponse($users);
@@ -504,6 +511,62 @@ switch ($action) {
             } else {
                 sendError('Neplatná akce. Použij block nebo unblock.');
             }
+        } elseif ($method === 'PUT') {
+            // Update user fields
+            if (empty($input['userId'])) sendError('Chybí userId.');
+            $target_id = intval($input['userId']);
+            
+            $fields = [];
+            $types = '';
+            $values = [];
+            
+            $allowed = ['email' => 's', 'first_name' => 's', 'last_name' => 's', 'gender' => 's', 'role' => 's', 'status' => 's'];
+            foreach ($allowed as $field => $type) {
+                if (isset($input[$field])) {
+                    $fields[] = "$field = ?";
+                    $types .= $type;
+                    $values[] = $input[$field];
+                }
+            }
+            
+            if (empty($fields)) sendError('Žádná pole k aktualizaci.');
+            
+            $types .= 'i';
+            $values[] = $target_id;
+            
+            $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = ?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$values);
+            $stmt->execute();
+            
+            // Update vehicles if provided
+            if (isset($input['vehicles']) && is_array($input['vehicles'])) {
+                foreach ($input['vehicles'] as $v) {
+                    if (empty($v['id'])) continue;
+                    $vid = intval($v['id']);
+                    $vFields = [];
+                    $vTypes = '';
+                    $vValues = [];
+                    $vAllowed = ['brand' => 's', 'model' => 's', 'plate' => 's', 'color' => 's', 'engine_type' => 's'];
+                    foreach ($vAllowed as $vf => $vt) {
+                        if (isset($v[$vf])) {
+                            $vFields[] = "$vf = ?";
+                            $vTypes .= $vt;
+                            $vValues[] = $v[$vf];
+                        }
+                    }
+                    if (!empty($vFields)) {
+                        $vTypes .= 'i';
+                        $vValues[] = $vid;
+                        $vSql = "UPDATE vehicles SET " . implode(', ', $vFields) . " WHERE id = ? AND user_id = $target_id";
+                        $vStmt = $mysqli->prepare($vSql);
+                        $vStmt->bind_param($vTypes, ...$vValues);
+                        $vStmt->execute();
+                    }
+                }
+            }
+            
+            sendResponse(['userId' => $target_id, 'updated' => true]);
         }
         break;
 
@@ -512,9 +575,16 @@ switch ($action) {
         if ($user['role'] !== 'admin') sendError('Přístup odepřen.', 403);
         
         if ($method === 'GET') {
-            $res = $mysqli->query("SELECT r.id, r.origin, r.destination, r.departure, r.status, r.capacity, r.price, r.duration, u.email as driver_email, u.first_name, u.last_name FROM rides r JOIN users u ON r.driver_id = u.id ORDER BY r.departure DESC");
+            $res = $mysqli->query("SELECT r.id, r.origin, r.destination, r.departure, r.status, r.capacity, r.price, r.duration, r.notes, r.direction, r.driver_id, r.vehicle_id, r.created_at, u.email as driver_email, u.first_name, u.last_name FROM rides r JOIN users u ON r.driver_id = u.id ORDER BY r.departure DESC");
             $rides = [];
             while ($row = $res->fetch_assoc()) {
+                // Fetch ride requests
+                $reqRes = $mysqli->query("SELECT rr.id, rr.message, rr.status, rr.created_at, u.first_name as passenger_first_name, u.last_name as passenger_last_name, u.email as passenger_email FROM ride_requests rr JOIN users u ON rr.passenger_id = u.id WHERE rr.ride_id = {$row['id']} ORDER BY rr.created_at DESC");
+                $requests = [];
+                while ($rr = $reqRes->fetch_assoc()) {
+                    $requests[] = $rr;
+                }
+                $row['requests'] = $requests;
                 $rides[] = $row;
             }
             sendResponse($rides);
@@ -528,6 +598,48 @@ switch ($action) {
             } else {
                 sendError('Neplatná akce.');
             }
+        } elseif ($method === 'PUT') {
+            // Update ride fields
+            if (empty($input['rideId'])) sendError('Chybí rideId.');
+            $ride_id = intval($input['rideId']);
+            
+            $fields = [];
+            $types = '';
+            $values = [];
+            
+            $allowed = ['origin' => 's', 'destination' => 's', 'direction' => 's', 'departure' => 's', 'capacity' => 'i', 'price' => 'd', 'duration' => 's', 'notes' => 's', 'status' => 's'];
+            foreach ($allowed as $field => $type) {
+                if (isset($input[$field])) {
+                    $fields[] = "$field = ?";
+                    $types .= $type;
+                    $values[] = $input[$field];
+                }
+            }
+            
+            if (empty($fields)) sendError('Žádná pole k aktualizaci.');
+            
+            $types .= 'i';
+            $values[] = $ride_id;
+            
+            $sql = "UPDATE rides SET " . implode(', ', $fields) . " WHERE id = ?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$values);
+            $stmt->execute();
+            
+            // Update ride requests if provided
+            if (isset($input['requests']) && is_array($input['requests'])) {
+                foreach ($input['requests'] as $req) {
+                    if (empty($req['id']) || empty($req['status'])) continue;
+                    if (!in_array($req['status'], ['pending', 'approved', 'rejected'])) continue;
+                    $reqId = intval($req['id']);
+                    $reqStatus = $req['status'];
+                    $stmtReq = $mysqli->prepare("UPDATE ride_requests SET status = ? WHERE id = ? AND ride_id = ?");
+                    $stmtReq->bind_param("sii", $reqStatus, $reqId, $ride_id);
+                    $stmtReq->execute();
+                }
+            }
+            
+            sendResponse(['rideId' => $ride_id, 'updated' => true]);
         }
         break;
 
